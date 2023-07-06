@@ -8,3 +8,6 @@ class Venue:
 
 	def __str__(self):
 		return f" "
+
+	def addGig(self, gig):
+		self.gigs.append(gig)
