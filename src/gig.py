@@ -1,8 +1,8 @@
 import datetime
 
 class Gig:
-	def __init__(self, band, venue, doors, url):
-		self.band = band
+	def __init__(self, bands, venue, doors, url):
+		self.bands = bands
 		self.doors = doors
 		self.url = url
 
