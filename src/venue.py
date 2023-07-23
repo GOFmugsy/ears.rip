@@ -1,4 +1,6 @@
-class Venue:
+from abc import ABC, abstractmethod
+
+class Venue(ABC):
 	def __init__(self, name, latlong, address, homepage, schedule):
 		self.name = name
 		self.latlong = latlong
@@ -11,3 +13,11 @@ class Venue:
 
 	def addGig(self, gig):
 		self.gigs.append(gig)
+
+	@abstractmethod
+	def getLinks(self):
+		pass
+
+	@abstractmethod
+	def getDates(self):
+		pass
