@@ -25,11 +25,9 @@ class Earl(Venue):
 			urls.append(url)
 		return urls
 
-	def getDates(self):
+	def getDoors(self):
 		datePs = self.soup.find_all('p', 'show-listing-date')
 		dates = []
-
-	def getDoors(self):
 		pass
 		
 	def getBands(self):

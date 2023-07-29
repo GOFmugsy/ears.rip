@@ -16,22 +16,22 @@ class Venue(ABC):
 	def addGig(self, gig):
 		self.gigs.append(gig)
 
+	# Should return chronological list of all links for each show
 	@abstractmethod
 	def getLinks(self):
 		pass
 
-	@abstractmethod
-	def getDates(self):
-		pass
-
+	# Should return chronological datetime object with date and time of doors
 	@abstractmethod
 	def getDoors(self):
 		pass
 
+	# Should return a chronological list of ALL bands in the gig
 	@abstractmethod
 	def getBands(self):
 		pass
 
+	# Should build, store, and return the list of all gigs as Gig objects
 	@abstractmethod
 	def getGigs(self):
 		pass

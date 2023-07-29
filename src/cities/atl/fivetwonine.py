@@ -31,7 +31,13 @@ class Fivetwonine(Venue):
 		pass
 		
 	def getBands(self):
-		bands = self.soup.find_all('div', re.compile('show-listing-headliner|show-listing-support'))
+		bandsH = self.soup.find_all(re.compile('h[34]'), re.compile('event-headliners|event-bands'))
+		bands = []
+		for i in range(0, len(bandsH) - 1, 2):
+			headliner = re.search(r"(?<=>)(.*?)(?=<)", str(bandsH[i]))
+			support = re.search(r"(?<=>)(.*?)(?=<)", str(bandsH[i + 1]))
+			bands.append(headliner.group() + " - " + support.group())
+
 		return bands
 
 	def getGigs(self):
