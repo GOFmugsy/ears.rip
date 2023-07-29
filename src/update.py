@@ -1,30 +1,29 @@
-from urllib.request import urlopen
-from bs4 import BeautifulSoup
+# from urllib.request import urlopen
+# from bs4 import BeautifulSoup
 import re
-from Gig import Gig
-from Venue import Venue
+import pkgutil
+import importlib
+
+from cities.Venue import Venue
+import cities.atl
 
 def main():
-	for venue in venues:
-		print("processing: " + venue.name)
-		page = urlopen(venue.schedule)
-		html = page.read().decode("utf-8")
-		soup = BeautifulSoup(html, "html.parser")
+	venues = []
+	
+	# import all modules in city package
+	for loader, name, ispkg in pkgutil.walk_packages(cities.atl.__path__):
+		mod = importlib.import_module('.' + name, 'cities.atl')
 
-		links = soup.find_all('a', 'cl-element-featured_media__anchor')
-		dates = soup.find_all('p', 'show-listing-date')
-		bands = soup.find_all('div', re.compile('show-listing-headliner|show-listing-support'))
-		for link in links:
-			url = re.search(r"https://badearl.com/show/.*?/", str(link))
-			print(url.group())
-		for date in dates:
-			print(date)
-		for band in bands:
+	# instantiate all venue subclasses to list
+	print("Fetching and parsing venue information ... ")
+	venues = [cls() for cls in Venue.__subclasses__()]
+
+	for venue in venues:
+		print(venue.name)
+		for band in venue.getBands():
 			print(band)
-		print('Number of show links: ' + str(len(links)))
-		print('Number of dates: ' + str(len(dates)))
-		print('bands: ' + str(len(bands)))
-		
+
+	
 
 if __name__ == "__main__":
 	main()

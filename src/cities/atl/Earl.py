@@ -1,4 +1,10 @@
-from .. import Venue
+from urllib.request import urlopen
+from bs4 import BeautifulSoup
+import re
+import datetime
+
+from ..Venue import Venue
+from ..Gig import Gig
 
 class Earl(Venue):
 	def __init__(self):
@@ -7,9 +13,9 @@ class Earl(Venue):
 		self.address = "488 Flat Shoals Ave SE, Atlanta, GA 30316"
 		self.url = "https://badearl.com/"
 		self.schedule = "https://badearl.com/"
-		self.page = urlopen(venue.schedule)
-		self.html = page.read().decode("utf-8")
-		self.soup = BeautifulSoup(html, "html.parser")
+		self.page = urlopen(self.schedule)
+		self.html = self.page.read().decode("utf-8")
+		self.soup = BeautifulSoup(self.html, "html.parser")
 
 	def getLinks(self):
 		links = self.soup.find_all('a', 'cl-element-featured_media__anchor')
@@ -20,8 +26,20 @@ class Earl(Venue):
 		return urls
 
 	def getDates(self):
-		datePs = soup.find_all('p', 'show-listing-date')
+		datePs = self.soup.find_all('p', 'show-listing-date')
 		dates = []
+
+	def getDoors(self):
+		pass
 		
-		
+	def getBands(self):
+		bandsH = self.soup.find_all('div', re.compile('show-listing-headliner|show-listing-support'))
+		bands = []
+		for bandH in bandsH:
+			band = re.search(r"(?<=>)(.*?)(?=<)", str(bandH))
+			bands.append(band.group())
+		return bands
+	
+	def getGigs(self):
+		pass
 

@@ -7,6 +7,8 @@ class Venue(ABC):
 		self.address = address
 		self.homepage = homepage
 		self.schedule = schedule
+		self.venues = []
+		self.gigs = []
 
 	def __str__(self):
 		return f" "
@@ -20,4 +22,16 @@ class Venue(ABC):
 
 	@abstractmethod
 	def getDates(self):
+		pass
+
+	@abstractmethod
+	def getDoors(self):
+		pass
+
+	@abstractmethod
+	def getBands(self):
+		pass
+
+	@abstractmethod
+	def getGigs(self):
 		pass
