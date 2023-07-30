@@ -23,12 +23,17 @@ class Fivetwonine(Venue):
 			urls.append(url)
 		return urls
 
-	def getDates(self):
-		datePs = self.soup.find_all('p', 'show-listing-date')
-		dates = []
-	
 	def getDoors(self):
-		pass
+		# get Dates
+		datesH = self.soup.find_all('h1', 'event-date-single')
+		dates = []
+		for dateH in datesH:
+			date = re.search(r"(?<=>)(.*?)(?=<\/)", str(dateH))
+			dates.append(date.group())
+		
+		# get Times
+		timeH = self.soup.find_all('p', 'event-meta')
+		return dates
 		
 	def getBands(self):
 		bandsH = self.soup.find_all(re.compile('h[34]'), re.compile('event-headliners|event-bands'))
