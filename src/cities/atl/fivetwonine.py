@@ -30,10 +30,27 @@ class Fivetwonine(Venue):
 		for dateH in datesH:
 			date = re.search(r"(?<=>)(.*?)(?=<\/)", str(dateH))
 			dates.append(date.group())
-		
+	
 		# get Times
-		timeH = self.soup.find_all('p', 'event-meta')
-		return dates
+		timesH = self.soup.find_all('p', 'event-meta')
+		times = []
+		for timeH in timesH:
+			time = re.search(r"[0-9]:[0-9][0-9] pm", str(timeH))
+			times.append(time.group())
+
+		# combine to get Doors
+		doors = []
+		for i in range(len(dates)):
+			door = dates[i] + " @ " + times[i]
+			doors.append(door)
+		
+		return doors
+
+	def getCost(self):
+		pass
+
+	def getDoorCost(self):
+		pass
 		
 	def getBands(self):
 		bandsH = self.soup.find_all(re.compile('h[34]'), re.compile('event-headliners|event-bands'))

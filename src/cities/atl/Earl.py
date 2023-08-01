@@ -29,6 +29,12 @@ class Earl(Venue):
 		datePs = self.soup.find_all('p', 'show-listing-date')
 		dates = []
 		pass
+
+	def getCost(self):
+		pass
+
+	def getDoorCost(self):
+		pass
 		
 	def getBands(self):
 		bandsH = self.soup.find_all('div', re.compile('show-listing-headliner|show-listing-support'))
