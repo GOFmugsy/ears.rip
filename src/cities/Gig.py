@@ -8,7 +8,7 @@ class Gig:
 		self.cost = cost
 
 	def __str__(self):
-		return r" "
+		return r"bands: " + self.bands + "\ndoors: " + str(self.doors) + "\nurl: " + self.url + "\ncost: " + self.cost + "\n"
 
 	def getHTML(self):
 		return r" "

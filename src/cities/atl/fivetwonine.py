@@ -4,6 +4,7 @@ import re
 import datetime
 
 from ..Venue import Venue
+from ..Gig import Gig
 
 class Fivetwonine(Venue):
 	def __init__(self):
@@ -83,10 +84,22 @@ class Fivetwonine(Venue):
 			bands = headliner + support
 		
 			# Build Door Datetime object
+			mxref = {'JAN': 1, 'FEB': 2, 'MAR': 3, 'APR': 4, 'MAY': 5, 'JUN': 6,
+				'JUL': 7, 'AUG': 8, 'SEP': 9, 'OCT': 10, 'NOV': 11, 'DEC': 12}
+
 			dateH = gigH.find_all('h1', 'event-date-single')
 			date = re.search(r"(?<=span class=\"right\">)(.*?)(?=<)", str(dateH)).group()
+
 			timeH = gigH.find_all('p', 'event-meta')
 			time = re.search(r"[0-9]+:[0-9]+ [ap]m", str(timeH[0])).group()
+			tsplit = time.split(' ')
+			hour = re.search(r"(^[0-9]+)(:)", tsplit[0]).group(1)
+			ampm = tsplit[1]
+			if ampm == 'pm':
+				hour = int(hour) + 12
+
+			dsplit = date.split(' ')
+			dt = datetime.datetime(int(dsplit[2]), int(mxref[dsplit[0]]), int(dsplit[1][0:2]), hour=hour)
 
 			# get Cost(s)
 			costH = gigH.find_all('p', 'event-meta')
@@ -106,10 +119,11 @@ class Fivetwonine(Venue):
 				print('can not find link for gig at ' + self.name + ' on ' + date)
 				
 			# instantiate gig
-			gig = Gig(bands, doors, link, cost)
+			gig = Gig(bands, dt, link, cost)
+			gigs.append(gig)
 
 		# Find Door DateTime
-		return links
+		return gigs
 
 
 
