@@ -16,52 +16,30 @@ class Fivetwonine(Venue):
 		self.page = urlopen(self.schedule)
 		self.html = self.page.read().decode("utf-8")
 		self.soup = BeautifulSoup(self.html, "html.parser")
+		self.gigs = self.getGigs()
 
 	def getLinks(self):
-		links = self.soup.find_all('a', 'cl-element-featured_media__anchor')
-		urls = []
-		for link in links:
-			url = re.search(r"https://badearl.com/show/.*?/", str(link))
-			urls.append(url)
-		return urls
+		links = []
+		for gig in self.gigs:
+			links.append(gig.url)
+		return links
 
 	def getDoors(self):
-		# get Dates
-		datesH = self.soup.find_all('h1', 'event-date-single')
-		dates = []
-		for dateH in datesH:
-			date = re.search(r"(?<=>)(.*?)(?=<\/)", str(dateH))
-			dates.append(date.group())
-	
-		# get Times
-		timesH = self.soup.find_all('p', 'event-meta')
-		times = []
-		for timeH in timesH:
-			time = re.search(r"[0-9]:[0-9][0-9] pm", str(timeH))
-			times.append(time.group())
-
-		# combine to get Doors
 		doors = []
-		for i in range(len(dates)):
-			door = dates[i] + " @ " + times[i]
-			doors.append(door)
-		
+		for gig in self.gigs:
+			doors.append(gig.doors)
 		return doors
 
 	def getCost(self):
-		pass
+		costs = []
+		for gig in self.gigs:
+			costs.append(gig.cost)
+		return costs
 
-	def getDoorCost(self):
-		pass
-		
 	def getBands(self):
-		bandsH = self.soup.find_all(re.compile('h[34]'), re.compile('event-headliners|event-bands'))
 		bands = []
-		for i in range(0, len(bandsH) - 1, 2):
-			headliner = re.search(r"(?<=>)(.*?)(?=<)", str(bandsH[i]))
-			support = re.search(r"(?<=>)(.*?)(?=<)", str(bandsH[i + 1]))
-			bands.append(headliner.group() + " - " + support.group())
-
+		for gig in self.gigs:
+			bands.append(gig.bands)
 		return bands
 
 	def getGigs(self):

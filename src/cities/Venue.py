@@ -31,11 +31,6 @@ class Venue(ABC):
 	def getCost(self):
 		pass
 
-	# Should return chronological cost for each show if purchased at the door
-	@abstractmethod
-	def getDoorCost(self):
-		pass
-
 	# Should return a chronological list of ALL bands in the gig
 	@abstractmethod
 	def getBands(self):
