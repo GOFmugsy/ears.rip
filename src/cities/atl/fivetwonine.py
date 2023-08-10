@@ -66,11 +66,10 @@ class Fivetwonine(Venue):
 	def getGigs(self):
 		gigsH = self.soup.find_all('div', 'event-container-single')
 		gigs = []
-		costs = []
 		
 		# Find bands
 		for gigH in gigsH:
-			bands = []
+			bands = ''
 			doors = ''
 			url = ''
 			cost = ''
@@ -81,9 +80,7 @@ class Fivetwonine(Venue):
 			support = ''
 			if len(bandH) > 1:
 				support = ' | ' + re.search(r"(?<=>)(.*?)(?=<)", str(bandH[1])).group()
-			band = headliner + support
-			print(band)
-			bands.append(band)
+			bands = headliner + support
 		
 			# Build Door Datetime object
 			dateH = gigH.find_all('h1', 'event-date-single')
@@ -93,19 +90,26 @@ class Fivetwonine(Venue):
 
 			# get Cost(s)
 			costH = gigH.find_all('p', 'event-meta')
-			#cost = re.search(r"\$[0-9]+|\$[0-9]+ - $[0-9]+", str(costH[0])).group()
 			cost = 'NOT FOUND'
 			try:
-				cost = re.search(r"\$[0-9]+ - $[0-9]+|\$[0-9]+|FREE", str(costH[0])).group()
+				# pretty damn loose
+				cost = re.search(r"(\$.*)|FREE", str(costH[0])).group(0)
 			except:
 				print('can not find cost for gig at ' + self.name + ' on ' + date)
 
-			costs.append(cost)
-			
-			
+			# get Link
+			linkH = gigH.find_all('a', 'button')
+			link = 'NO LINK'
+			try:
+				link = re.search('(href=")(' + self.url + '.*?)(">Info)', str(linkH)).group(2)
+			except:
+				print('can not find link for gig at ' + self.name + ' on ' + date)
+				
+			# instantiate gig
+			gig = Gig(bands, doors, link, cost)
 
 		# Find Door DateTime
-		return costs
+		return links
 
 
 
