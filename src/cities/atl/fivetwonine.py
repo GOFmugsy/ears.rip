@@ -1,6 +1,7 @@
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 import re
+import datetime
 
 from ..Venue import Venue
 
@@ -63,6 +64,55 @@ class Fivetwonine(Venue):
 		return bands
 
 	def getGigs(self):
-		pass
+		gigsH = self.soup.find_all('div', 'event-container-single')
+		gigs = []
+		costs = []
+		
+		# Find bands
+		for gigH in gigsH:
+			bands = []
+			doors = ''
+			url = ''
+			cost = ''
+
+			# Get band list
+			bandH = gigH.find_all(re.compile('h[34]'), re.compile('event-headliners|event-bands'))
+			headliner = re.search(r"(?<=>)(.*?)(?=<)", str(bandH[0])).group()
+			support = ''
+			if len(bandH) > 1:
+				support = ' | ' + re.search(r"(?<=>)(.*?)(?=<)", str(bandH[1])).group()
+			band = headliner + support
+			print(band)
+			bands.append(band)
+		
+			# Build Door Datetime object
+			dateH = gigH.find_all('h1', 'event-date-single')
+			date = re.search(r"(?<=span class=\"right\">)(.*?)(?=<)", str(dateH)).group()
+			timeH = gigH.find_all('p', 'event-meta')
+			time = re.search(r"[0-9]+:[0-9]+ [ap]m", str(timeH[0])).group()
+
+			# get Cost(s)
+			costH = gigH.find_all('p', 'event-meta')
+			#cost = re.search(r"\$[0-9]+|\$[0-9]+ - $[0-9]+", str(costH[0])).group()
+			cost = 'NOT FOUND'
+			try:
+				cost = re.search(r"\$[0-9]+ - $[0-9]+|\$[0-9]+|FREE", str(costH[0])).group()
+			except:
+				print('can not find cost for gig at ' + self.name + ' on ' + date)
+
+			costs.append(cost)
+			
+			
+
+		# Find Door DateTime
+		return costs
+
+
+
+
+
+
+
+
 
 

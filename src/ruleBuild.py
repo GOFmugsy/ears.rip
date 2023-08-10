@@ -19,9 +19,8 @@ def main():
 	for venue in venues:
 		print(venue.name)
 		if venue.name == "529":
-			for door in venue.getDoors():
-				print(door)
-
+			for gig in venue.getGigs():
+				print(gig)
 	
 
 if __name__ == "__main__":

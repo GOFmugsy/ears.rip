@@ -1,13 +1,11 @@
 import datetime
 
 class Gig:
-	def __init__(self, links, bands, doors, url, cost, doorCost):
-		self.links = links
+	def __init__(self, bands, doors, url, cost):
 		self.bands = bands
 		self.doors = doors
 		self.url = url
 		self.cost = cost
-		self.doorCost = doorcost
 
 	def __str__(self):
 		return r" "
