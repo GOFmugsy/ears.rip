@@ -16,6 +16,7 @@ class Earl(Venue):
 		self.page = urlopen(self.schedule)
 		self.html = self.page.read().decode("utf-8")
 		self.soup = BeautifulSoup(self.html, "html.parser")
+		self.gigs = self.getGigs()
 
 	def getLinks(self):
 		links = self.soup.find_all('a', 'cl-element-featured_media__anchor')
@@ -45,5 +46,27 @@ class Earl(Venue):
 		return bands
 	
 	def getGigs(self):
-		pass
+		gigsH = self.soup.find_all('div', 'show-listing-right')
+		gigs = []
+
+		for gigH in gigsH:
+			bands = ''
+			doors = ''
+			url = ''
+			cost = ''
+
+			bandH = gigH.find_all('div', re.compile('show-listing-headliner|show-listing-support'))
+			headliner = re.search(r"(?<=>)(.*?)(?=<)", str(bandH[0])).group()
+			support = ''
+			if len(bandH) > 1:
+				for i in range(1, len(bandH)):
+					support = support + ' | ' + re.search(r"(?<=>)(.*?)(?=<)", str(bandH[i])).group()
+			bands = headliner + support
+
+			gigs.append(bands)
+			
+			
+
+		
+		return gigs
 
