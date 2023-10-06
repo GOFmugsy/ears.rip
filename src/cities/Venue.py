@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import os
 
 class Venue(ABC):
 	def __init__(self, name, latlong, address, homepage, schedule):
@@ -15,6 +16,16 @@ class Venue(ABC):
 
 	def addGig(self, gig):
 		self.gigs.append(gig)
+
+	# universal check if the current venue's schedule page has already been checked in the last 24 hours
+	# If it has been, use the cached version. If not, then pull it and cache it.
+	def getPage(self):
+		cache = '../tmp'
+		for f in os.listdir(cache) and f == self.name + '.html':
+			cachedPage = os.path.join(cache, f)
+			if os.path.isfile(cachedPage):
+				print("loading cached: " + f)
+		
 
 	# Should return chronological list of all links for each show
 	@abstractmethod

@@ -13,10 +13,11 @@ class Earl(Venue):
 		self.address = "488 Flat Shoals Ave SE, Atlanta, GA 30316"
 		self.url = "https://badearl.com/"
 		self.schedule = "https://badearl.com/"
-		self.page = urlopen(self.schedule)
-		self.html = self.page.read().decode("utf-8")
-		self.soup = BeautifulSoup(self.html, "html.parser")
-		self.gigs = self.getGigs()
+		self.page = self.getPage()
+		# self.page = urlopen(self.schedule)
+		# self.html = self.page.read().decode("utf-8")
+		# self.soup = BeautifulSoup(self.html, "html.parser")
+		# self.gigs = self.getGigs()
 
 	def getLinks(self):
 		links = self.soup.find_all('a', 'cl-element-featured_media__anchor')

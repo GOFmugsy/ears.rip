@@ -18,9 +18,9 @@ def main():
 
 	for venue in venues:
 		print(venue.name)
-		if venue.name == "The Earl":
-			for gig in venue.gigs:
-				print(gig)
+		#if venue.name == "The Earl":
+			# for gig in venue.gigs:
+				# print(gig)
 	
 
 if __name__ == "__main__":
