@@ -16,13 +16,16 @@ def main():
 	print("Fetching and parsing venue information ... ")
 	venues = [cls() for cls in Venue.__subclasses__()]
 
+	buildWebsite(venues)
+
 	for venue in venues:
 		print(venue.name)
 		if venue.name == "529":
 			for band in venue.getBands():
 				print(band)
 
-	
+def buildWebsite(venues):
+	pass
 
 if __name__ == "__main__":
 	main()
