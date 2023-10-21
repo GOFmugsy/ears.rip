@@ -1,0 +1,8 @@
+version: "3"
+
+services:
+  dev-ears-rip:
+    build:
+      dockerfile: Dockerfile.nginx
+    ports:
+      - 80:80

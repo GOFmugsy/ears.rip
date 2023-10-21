@@ -1,0 +1,3 @@
+FROM nginx
+COPY ./dev/web/index.html /usr/share/nginx/html/index.html
+
