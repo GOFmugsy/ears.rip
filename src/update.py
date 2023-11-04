@@ -1,6 +1,8 @@
 import re
 import pkgutil
 import importlib
+import dominate
+from dominate.tags import *
 
 from cities.Venue import Venue
 import cities.atl
@@ -25,7 +27,17 @@ def main():
 				print(band)
 
 def buildWebsite(venues):
-	pass
+	web = dominate.document(title = "EARS.RIP")
+
+	with web.head:
+		link(rel='stylesheet', href='css/style.css')
+
+	with web:
+		attr(cls='body')
+		h1('EARS.RIP')
+
+	with open('../deploy/dev/web/index.html', 'w') as index:
+		index.write(str(web))
 
 if __name__ == "__main__":
 	main()
