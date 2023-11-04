@@ -13,9 +13,10 @@ class Fivetwonine(Venue):
 		self.address = "529 Flat Shoals Ave SE, Atlanta, GA 30316"
 		self.url = "https://529atlanta.com/"
 		self.schedule = "https://529atlanta.com/calendar/"
-		self.page = urlopen(self.schedule)
-		self.html = self.page.read().decode("utf-8")
-		self.soup = BeautifulSoup(self.html, "html.parser")
+		# self.page = urlopen(self.schedule)
+		# self.html = self.page.read().decode("utf-8")
+		# self.soup = BeautifulSoup(self.html, "html.parser")
+		self.soup = self.getPage()
 		self.gigs = self.getGigs()
 
 	def getLinks(self):

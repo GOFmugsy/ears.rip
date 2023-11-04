@@ -1,5 +1,8 @@
 from abc import ABC, abstractmethod
 import os
+import time, datetime
+from urllib.request import urlopen
+from bs4 import BeautifulSoup
 
 class Venue(ABC):
 	def __init__(self, name, latlong, address, homepage, schedule):
@@ -19,12 +22,40 @@ class Venue(ABC):
 
 	# universal check if the current venue's schedule page has already been checked in the last 24 hours
 	# If it has been, use the cached version. If not, then pull it and cache it.
+  # 
+  # Returns a BeautifulSoup object
 	def getPage(self):
 		cache = '../tmp'
-		for f in os.listdir(cache) and f == self.name + '.html':
-			cachedPage = os.path.join(cache, f)
-			if os.path.isfile(cachedPage):
-				print("loading cached: " + f)
+		soup = ''
+		cachedFound = False
+		html = ''
+
+		for f in os.listdir(cache):
+			if f == self.name + '.html':
+				cachedPage = os.path.join(cache, f)
+				print("Found cached " + cachedPage)
+				# mTime = datetime.fromtimestamp(os.path.getmtime(cachedPage), tz=timezone.utc)
+				mTime = datetime.datetime.fromtimestamp(os.path.getmtime(cachedPage))
+				curTime = datetime.datetime.now()
+				cacheAge = curTime - mTime
+				print("Cached " + cachedPage + " is " + str(cacheAge) + " old")
+				page = ''
+
+				if os.path.isfile(cachedPage) and cacheAge < datetime.timedelta(hours = 24): # only use if less than 24 hours old
+					print("loading cached: " + cachedPage)
+					page = open(cachedPage)
+					html = page.read()
+					cachedFound = True
+		
+		if not cachedFound:
+			print("writing to cache: " + os.path.join(cache, self.name + '.html'))
+			page = urlopen(self.schedule)
+			html = page.read().decode("utf-8")
+			with open(os.path.join(cache, self.name + '.html'), 'w') as c:
+				c.write(page.read().decode("utf-8"))
+
+		soup = BeautifulSoup(html, "html.parser")
+		return soup
 		
 
 	# Should return chronological list of all links for each show
