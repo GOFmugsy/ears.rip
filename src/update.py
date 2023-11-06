@@ -3,6 +3,7 @@ import pkgutil
 import importlib
 import dominate
 from dominate.tags import *
+import datetime
 
 from cities.Venue import Venue
 import cities.atl
@@ -28,13 +29,27 @@ def main():
 
 def buildWebsite(venues):
 	web = dominate.document(title = "EARS.RIP")
+	daysInSched = 7
+	date = datetime.datetime.now()
 
 	with web.head:
 		link(rel='stylesheet', href='css/style.css')
 
 	with web:
 		attr(cls='body')
-		h1('EARS.RIP')
+
+		with div():
+			attr(cls='title')
+			h1('EARS.RIP')
+
+		with div():
+			attr(cls='schedule')
+			
+			for day in range(daysInSched):
+				
+
+				date += datetime.timedelta(days=1)
+				
 
 	with open('../deploy/dev/web/index.html', 'w') as index:
 		index.write(str(web))
