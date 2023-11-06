@@ -13,37 +13,10 @@ class Fivetwonine(Venue):
 		self.address = "529 Flat Shoals Ave SE, Atlanta, GA 30316"
 		self.url = "https://529atlanta.com/"
 		self.schedule = "https://529atlanta.com/calendar/"
-		# self.page = urlopen(self.schedule)
-		# self.html = self.page.read().decode("utf-8")
-		# self.soup = BeautifulSoup(self.html, "html.parser")
 		self.soup = self.getPage()
-		self.gigs = self.getGigs()
+		self.gigs = self.fetchGigs()
 
-	def getLinks(self):
-		links = []
-		for gig in self.gigs:
-			links.append(gig.url)
-		return links
-
-	def getDoors(self):
-		doors = []
-		for gig in self.gigs:
-			doors.append(gig.doors)
-		return doors
-
-	def getCost(self):
-		costs = []
-		for gig in self.gigs:
-			costs.append(gig.cost)
-		return costs
-
-	def getBands(self):
-		bands = []
-		for gig in self.gigs:
-			bands.append(gig.bands)
-		return bands
-
-	def getGigs(self):
+	def fetchGigs(self):
 		gigsH = self.soup.find_all('div', 'event-container-single')
 		gigs = []
 		

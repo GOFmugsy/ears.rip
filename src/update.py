@@ -46,7 +46,7 @@ def buildWebsite(venues):
 			attr(cls='schedule')
 			
 			for day in range(daysInSched):
-				
+				print(date)
 
 				date += datetime.timedelta(days=1)
 				

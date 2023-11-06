@@ -59,26 +59,38 @@ class Venue(ABC):
 		
 
 	# Should return chronological list of all links for each show
-	@abstractmethod
 	def getLinks(self):
-		pass
+		links = []
+		for gig in self.gigs:
+			links.append(gig.url)
+		return links
 
 	# Should return chronological datetime object with date and time of doors
-	@abstractmethod
 	def getDoors(self):
-		pass
+		doors = []
+		for gig in self.gigs:
+			doors.append(gig.doors)
+		return doors
 
 	# Should return chronological cost for each show
-	@abstractmethod
 	def getCost(self):
-		pass
+		costs = []
+		for gig in self.gigs:
+			costs.append(gig.cost)
+		return costs
 
 	# Should return a chronological list of ALL bands in the gig
-	@abstractmethod
 	def getBands(self):
-		pass
+		bands = []
+		for gig in self.gigs:
+			bands.append(gig.bands)
+		return bands
+
+	# Should return a chronological list of ALL gigs
+	def getGigs(self):
+		return self.gigs
 
 	# Should build, store, and return the list of all gigs as Gig objects
 	@abstractmethod
-	def getGigs(self):
+	def fetchGigs(self):
 		pass
