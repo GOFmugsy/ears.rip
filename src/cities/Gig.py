@@ -1,4 +1,6 @@
 import datetime
+import dominate
+from dominate.tags import *
 
 class Gig:
 	def __init__(self, bands, doors, url, cost):
@@ -10,6 +12,3 @@ class Gig:
 	def __str__(self):
 		return r"bands: " + self.bands + "\ndoors: " + str(self.doors) + "\nurl: " + self.url + "\ncost: " + self.cost + "\n"
 
-	def getHTML(self):
-		return r" "
-		

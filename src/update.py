@@ -21,12 +21,6 @@ def main():
 
 	buildWebsite(venues)
 
-	for venue in venues:
-		print(venue.name)
-		if venue.name == "529":
-			for band in venue.getBands():
-				print(band)
-
 def buildWebsite(venues):
 	web = dominate.document(title = "EARS.RIP")
 	daysInSched = 7
@@ -49,7 +43,17 @@ def buildWebsite(venues):
 				for venue in venues:
 					for gig in venue.getGigs():
 						if gig.doors.date() == date.date():
-							print(gig)
+							with div():
+								attr(cls='gig')
+								with div():
+									attr(cls='bands')
+									h3(gig.bands)
+								with div():
+									attr(cls='venue')
+									p(venue.name)
+								with div():
+									attr(cls='doors')
+									p(str(gig.doors))
 
 				date += datetime.timedelta(days=1)
 				
