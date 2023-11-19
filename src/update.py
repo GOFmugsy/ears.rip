@@ -46,7 +46,10 @@ def buildWebsite(venues):
 			attr(cls='schedule')
 			
 			for day in range(daysInSched):
-				print(date)
+				for venue in venues:
+					for gig in venue.getGigs():
+						if gig.doors.date() == date.date():
+							print(gig)
 
 				date += datetime.timedelta(days=1)
 				
