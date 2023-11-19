@@ -34,7 +34,6 @@ class Venue(ABC):
 			if f == self.name + '.html':
 				cachedPage = os.path.join(cache, f)
 				print("Found cached " + cachedPage)
-				# mTime = datetime.fromtimestamp(os.path.getmtime(cachedPage), tz=timezone.utc)
 				mTime = datetime.datetime.fromtimestamp(os.path.getmtime(cachedPage))
 				curTime = datetime.datetime.now()
 				cacheAge = curTime - mTime
@@ -52,7 +51,7 @@ class Venue(ABC):
 			page = urlopen(self.schedule)
 			html = page.read().decode("utf-8")
 			with open(os.path.join(cache, self.name + '.html'), 'w') as c:
-				c.write(page.read().decode("utf-8"))
+				c.write(html)
 
 		soup = BeautifulSoup(html, "html.parser")
 		return soup

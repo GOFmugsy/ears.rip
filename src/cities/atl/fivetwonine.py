@@ -74,7 +74,6 @@ class Fivetwonine(Venue):
 			gig = Gig(bands, dt, link, cost)
 			gigs.append(gig)
 
-		# Find Door DateTime
 		return gigs
 
 
