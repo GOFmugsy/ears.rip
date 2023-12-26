@@ -19,9 +19,30 @@ class Fivetwonine(Venue):
 		gigs = []
 
 		# uses a json api for the sckhedule
+		# get json file location
 		jsonLocH = self.soup.find_all('div', 'c-axs-events__container js-axs-events-section')
 		jsonLoc = re.search(r"(?<=data-file=\")(.*?)(\")", str(jsonLocH)).group(1)
-		gigs.append(jsonLoc)
+
+		# retreive json file using cache if possible
+		json = self.getJSON(jsonLoc)
+
+		# iterate across gigs
+		for gigJ in json['events']:
+			bands = ''
+			doors = ''
+			url = ''
+			cost = ''
+
+			# Build band list
+			print(gigJ['title']['headlinersText'])
+			bands = gigJ['title']['headlinersText']
+			if gigJ['title']['supportingText'] is not None:
+				bands += " | " + gigJ['title']['supportingText']
+
+			# Build door datetime object
+			doors = gigJ['doorDateTime']
+
+			gigs.append(bands)
 
 		return gigs
 

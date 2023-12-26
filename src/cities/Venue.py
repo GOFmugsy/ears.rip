@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 import os
 import time, datetime
-# from urllib.request import urlopen
 from bs4 import BeautifulSoup
 import requests
+import json
 
 class Venue(ABC):
 	def __init__(self, name, latlong, address, homepage, schedule):
@@ -61,10 +61,10 @@ class Venue(ABC):
 	# similar to getPage - given link to json, retreive it unless there's a cached version that's not too old
 	# 
 	# Returns a json object
-	def getJSON(self):
+	def getJSON(self, jsonLoc):
 		cache = "../tmp"
 		cachedFound = False
-		json = ''
+		jsonData = ''
 
 		for f in os.listdir(cache):
 			if f == self.name + '.json':
@@ -80,17 +80,17 @@ class Venue(ABC):
 				if os.path.isfile(cachedPage) and cacheAge < datetime.timedelta(hours = 24):
 					print("loading cached: " + cachedPage)
 					page = open(cachedPage)
-					json = page.read()
+					jsonData = json.load(page)
 					cachedFound = True
 
 		if not cachedFound:
 			print("writing to cache: " + os.path.join(cache, self.name + '.json'))
-			page = requests.get(self.schedule)
-			json = page.json()
+			page = requests.get(jsonLoc)
+			jsonData = page.json()
 			with open(os.path.join(cache, self.name + '.json'), 'w') as c:
-				c.write(json)
+				json.dump(jsonData, c)
 
-		return json
+		return jsonData
 
 	# Should return chronological list of all links for each show
 	def getLinks(self):
