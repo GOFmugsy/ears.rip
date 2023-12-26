@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import re
 import pkgutil
 import importlib
@@ -16,9 +18,10 @@ def main():
 	print("Fetching and parsing venue information ... ")
 	venues = [cls() for cls in Venue.__subclasses__()]
 
+	# test here
 	for venue in venues:
 		print(venue.name)
-		if venue.name == "The Earl":
+		if venue.name == "Terminal West":
 			for gig in venue.gigs:
 				print(gig)
 	

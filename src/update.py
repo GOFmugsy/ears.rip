@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import re
 import pkgutil
 import importlib
@@ -23,7 +25,7 @@ def main():
 
 def buildWebsite(venues):
 	web = dominate.document(title = "EARS.RIP")
-	daysInSched = 7
+	daysInSched = 30
 	date = datetime.datetime.now()
 
 	with web.head:
@@ -47,13 +49,10 @@ def buildWebsite(venues):
 								attr(cls='gig')
 								with div():
 									attr(cls='bands')
-									h3(gig.bands)
+									h4(a(gig.bands, href=gig.url))
 								with div():
-									attr(cls='venue')
-									p(venue.name)
-								with div():
-									attr(cls='doors')
-									p(str(gig.doors))
+									attr(cls='info')
+									str(a(venue.name, href=venue.url)) + str(p(' || ' + gig.cost + ' || ' + str(gig.doors)))
 
 				date += datetime.timedelta(days=1)
 				

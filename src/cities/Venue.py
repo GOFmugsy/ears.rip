@@ -40,7 +40,8 @@ class Venue(ABC):
 				print("Cached " + cachedPage + " is " + str(cacheAge) + " old")
 				page = ''
 
-				if os.path.isfile(cachedPage) and cacheAge < datetime.timedelta(hours = 24): # only use if less than 24 hours old
+				# only use if less than 24 hours old
+				if os.path.isfile(cachedPage) and cacheAge < datetime.timedelta(hours = 24):
 					print("loading cached: " + cachedPage)
 					page = open(cachedPage)
 					html = page.read()
@@ -55,7 +56,40 @@ class Venue(ABC):
 
 		soup = BeautifulSoup(html, "html.parser")
 		return soup
-		
+
+	# similar to getPage - given link to json, retreive it unless there's a cached version that's not too old
+	# 
+	# Returns a json object
+	def getJSON(self):
+		cache = "../tmp"
+		cachedFound = False
+		json = ''
+
+		for f in os.listdir(cache):
+			if f == self.name + '.json':
+				cachedPage = os.path.join(cache, f)
+				print("Found cached " + cachedPage)
+				mTime = datetime.datetime.fromtimestamp(os.path.getmtime(cachedPage))
+				curTime = datetime.datetime.now()
+				cacheAge = curTime - mTime
+				print("Cached " + cachedPage + " is " + str(cacheAge) + " old")
+				page = ''
+
+				# only use if less than 24 hours old
+				if os.path.isfile(cachedPage) and cacheAge < datetime.timedelta(hours = 24):
+					print("loading cached: " + cachedPage)
+					page = open(cachedPage)
+					html = page.read()
+					cachedFound = True
+
+		if not cachedFound:
+			print("writing to cache: " + os.path.join(cache, self.name + '.json'))
+			page = urlopen(self.schedule)
+			html = page.read().decode("utf-8")
+			with open(os.path.join(cache, self.name + '.json'), 'w') as c:
+				c.write(html)
+
+	return json
 
 	# Should return chronological list of all links for each show
 	def getLinks(self):

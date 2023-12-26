@@ -1,3 +1,42 @@
 div.title {
-	text-align: center
+	text-align: center;
+	font-family: "Lucida Console", Courier, monospace
+}
+
+div.schedule {
+	width: 60%;
+	border: 1px solid black;
+	margin: 0 auto;
+	padding-top: 10px;
+	font-family: "Lucida Console", Courier, monospace
+}
+
+div.gig {
+	text-align: left;
+	margin-left: 20px;
+	a {
+		color: black;
+	}
+	p {
+		display: inline;
+	}
+}
+
+div.bands {
+	margin-top: 10px;
+	margin-bottom: 5px;
+	p {
+		display: inline;
+	}
+	h4 {
+		margin: 0;
+	}
+}
+
+div.info {
+	margin-top: 0;
+	margin-bottom: 0;
+	p {
+		display: inline;
+	}
 }
