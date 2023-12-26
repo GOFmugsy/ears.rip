@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
 import os
 import time, datetime
-from urllib.request import urlopen
+# from urllib.request import urlopen
 from bs4 import BeautifulSoup
+import requests
 
 class Venue(ABC):
 	def __init__(self, name, latlong, address, homepage, schedule):
@@ -49,8 +50,8 @@ class Venue(ABC):
 		
 		if not cachedFound:
 			print("writing to cache: " + os.path.join(cache, self.name + '.html'))
-			page = urlopen(self.schedule)
-			html = page.read().decode("utf-8")
+			page = requests.get(self.schedule)
+			html = page.text
 			with open(os.path.join(cache, self.name + '.html'), 'w') as c:
 				c.write(html)
 
@@ -79,17 +80,17 @@ class Venue(ABC):
 				if os.path.isfile(cachedPage) and cacheAge < datetime.timedelta(hours = 24):
 					print("loading cached: " + cachedPage)
 					page = open(cachedPage)
-					html = page.read()
+					json = page.read()
 					cachedFound = True
 
 		if not cachedFound:
 			print("writing to cache: " + os.path.join(cache, self.name + '.json'))
-			page = urlopen(self.schedule)
-			html = page.read().decode("utf-8")
+			page = requests.get(self.schedule)
+			json = page.json()
 			with open(os.path.join(cache, self.name + '.json'), 'w') as c:
-				c.write(html)
+				c.write(json)
 
-	return json
+		return json
 
 	# Should return chronological list of all links for each show
 	def getLinks(self):
