@@ -5,7 +5,7 @@ import datetime
 from ..Venue import Venue
 from ..Gig import Gig
 
-class Fivetwonine(Venue):
+class Terminalwest(Venue):
 	def __init__(self):
 		self.name = "Terminal West"
 		self.geo = ('33.781358', '-84.415787')
