@@ -21,7 +21,7 @@ class Venue(ABC):
 	def addGig(self, gig):
 		self.gigs.append(gig)
 
-	# universal check if the current venue's schedule page has already been checked in the last 24 hours
+	# universal check if the current venue's schedule page has already been checked in the last 23 hours
 	# If it has been, use the cached version. If not, then pull it and cache it.
   # 
   # Returns a BeautifulSoup object
@@ -41,8 +41,8 @@ class Venue(ABC):
 				print("Cached " + cachedPage + " is " + str(cacheAge) + " old")
 				page = ''
 
-				# only use if less than 24 hours old
-				if os.path.isfile(cachedPage) and cacheAge < datetime.timedelta(hours = 24):
+				# only use if less than 23 hours old
+				if os.path.isfile(cachedPage) and cacheAge < datetime.timedelta(hours = 23):
 					print("loading cached: " + cachedPage)
 					page = open(cachedPage)
 					html = page.read()
@@ -76,8 +76,8 @@ class Venue(ABC):
 				print("Cached " + cachedPage + " is " + str(cacheAge) + " old")
 				page = ''
 
-				# only use if less than 24 hours old
-				if os.path.isfile(cachedPage) and cacheAge < datetime.timedelta(hours = 24):
+				# only use if less than 23 hours old
+				if os.path.isfile(cachedPage) and cacheAge < datetime.timedelta(hours = 23):
 					print("loading cached: " + cachedPage)
 					page = open(cachedPage)
 					jsonData = json.load(page)
