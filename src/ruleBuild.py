@@ -21,7 +21,7 @@ def main():
 	# test here
 	for venue in venues:
 		print(venue.name)
-		if venue.name == "Terminal West":
+		if venue.name == "Boggs Social":
 			for gig in venue.gigs:
 				print(gig)
 	
