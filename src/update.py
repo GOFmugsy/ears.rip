@@ -10,6 +10,8 @@ import datetime
 from cities.Venue import Venue
 import cities.atl
 
+disclaimer = "There is absolutely no guarantee of any kind provided with this page or any derivative of this page"
+
 def main():
 	venues = []
 	
@@ -52,9 +54,13 @@ def buildWebsite(venues):
 									h4(a(gig.bands, href=gig.url))
 								with div():
 									attr(cls='info')
-									str(a(venue.name, href=venue.url)) + str(p(' || ' + gig.cost + ' || ' + str(gig.doors)))
+									str(a(venue.name, href=venue.url)) + str(p(' || ' + gig.cost + ' || ' + str(gig.doors.strftime("%A, %d. %B %Y %-I:%M%p"))))
 
 				date += datetime.timedelta(days=1)
+
+		with div():
+			attr(cls='footer')
+			str(p(disclaimer))
 				
 
 	with open('../deploy/dev/web/index.html', 'w') as index:
