@@ -54,7 +54,7 @@ def buildWebsite(venues):
 									h4(a(gig.bands, href=gig.url))
 								with div():
 									attr(cls='info')
-									str(a(venue.name, href=venue.url)) + str(p(' || ' + gig.cost + ' || ' + str(gig.doors)))
+									str(a(venue.name, href=venue.url)) + str(p(' || ' + gig.cost + ' || ' + str(gig.doors.strftime("%A, %d. %B %Y %-I:%M%p"))))
 
 				date += datetime.timedelta(days=1)
 
