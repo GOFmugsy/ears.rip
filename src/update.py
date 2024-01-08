@@ -6,6 +6,7 @@ import importlib
 import dominate
 from dominate.tags import *
 import datetime
+import git
 
 from cities.Venue import Venue
 import cities.atl
@@ -29,6 +30,9 @@ def buildWebsite(venues):
 	web = dominate.document(title = "EARS.RIP")
 	daysInSched = 30
 	date = datetime.datetime.now()
+	now = datetime.datetime.now()
+	repo = git.Repo(search_parent_directories=True)
+	sha = repo.head.object.hexsha
 
 	with web.head:
 		link(rel='stylesheet', href='css/style.css')
@@ -61,6 +65,8 @@ def buildWebsite(venues):
 		with div():
 			attr(cls='footer')
 			str(p(disclaimer))
+			str(p(now.strftime("%A, %d. %B %Y %-I:%M%p")))
+			str(p(sha))
 				
 
 	with open('../deploy/dev/web/index.html', 'w') as index:
