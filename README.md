@@ -3,6 +3,12 @@ Website to provide central location to get all live music shows happening in a c
 
 [ears.rip](http://ears.rip)
 
+### Adding a Venue
+Adding a new venue:
+
+### Adding a City
+Adding a new city:
+
 ### Dependencies and Notes
 - Relies on certs from [certbot](https://certbot.eff.org/)
 - [Dominate](https://pypi.org/project/dominate/)

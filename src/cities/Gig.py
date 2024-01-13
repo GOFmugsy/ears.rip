@@ -1,6 +1,4 @@
 import datetime
-import dominate
-from dominate.tags import *
 
 class Gig:
 	def __init__(self, bands, doors, url, cost):

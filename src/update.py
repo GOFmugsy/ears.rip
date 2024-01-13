@@ -8,17 +8,21 @@ from dominate.tags import *
 import datetime
 import git
 
-from cities.Venue import Venue
-import cities.atl
-
+city = "atl"
 disclaimer = "There is absolutely no guarantee of any kind provided with this page or any derivative of this page"
+
+import cities
+from cities.Venue import Venue
+from cities.Gig import Gig
+importlib.import_module('cities.' + city)
+
 
 def main():
 	venues = []
 	
 	# import all modules in city package
-	for loader, name, ispkg in pkgutil.walk_packages(cities.atl.__path__):
-		mod = importlib.import_module('.' + name, 'cities.atl')
+	for loader, name, ispkg in pkgutil.walk_packages(path=['./cities/' + city + '/']):
+		mod = importlib.import_module('.' + name, 'cities.' + city)
 
 	# instantiate all venue subclasses to list
 	print("Fetching and parsing venue information ... ")
@@ -27,7 +31,7 @@ def main():
 	buildWebsite(venues)
 
 def buildWebsite(venues):
-	web = dominate.document(title = "EARS.RIP")
+	web = dominate.document(title = city.upper() + ".EARS.RIP")
 	daysInSched = 30
 	date = datetime.datetime.now()
 	now = datetime.datetime.now()
@@ -42,7 +46,7 @@ def buildWebsite(venues):
 
 		with div():
 			attr(cls='title')
-			h1('EARS.RIP')
+			h1(city.upper() + '.EARS.RIP')
 
 		with div():
 			attr(cls='schedule')
@@ -71,6 +75,6 @@ def buildWebsite(venues):
 
 	with open('../deploy/dev/web/index.html', 'w') as index:
 		index.write(str(web))
-
+	
 if __name__ == "__main__":
 	main()
