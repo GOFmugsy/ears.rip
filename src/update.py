@@ -75,6 +75,6 @@ def buildWebsite(venues):
 
 	with open('../deploy/dev/web/index.html', 'w') as index:
 		index.write(str(web))
-
+	
 if __name__ == "__main__":
 	main()

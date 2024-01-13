@@ -25,6 +25,6 @@ services:
       - 8444:443
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.atl-ears-rip.rule=Host(`atl.ears.rip.local`)" # defined in hosts file/DNS
+      - "traefik.http.routers.atl-ears-rip.rule=Host(`atl.ears.rip.local`,`atl.ears.rip`, `ears.rip`, `localhost`)" # Fix this for multiple cities
       - "traefik.http.routers.atl-ears-rip.entrypoints=web"
 
