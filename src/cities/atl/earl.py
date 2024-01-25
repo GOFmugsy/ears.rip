@@ -48,9 +48,10 @@ class Earl(Venue):
 			hour = int(time.group(1))
 			minute = int(time.group(2))
 			ampm = time.group(3)
-			if ampm.lower() == 'pm':
+			if ampm.lower() == 'pm' and hour < 12:
 				hour = int(hour) + 12
 
+			print("debug: " + dsplit[3] + ' ' + dsplit[1][0:3].upper() + ' ' + re.search('[0-9]+', dsplit[2]).group() + ' hour: ' + str(hour) + ' min: ' + str(minute))
 			dt = datetime.datetime(int(dsplit[3]), int(mxref[dsplit[1][0:3].upper()]), int(re.search('[0-9]+', dsplit[2]).group()), hour=hour, minute=minute)
 
 			# Get Cost(s)
