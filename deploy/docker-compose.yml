@@ -16,7 +16,7 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
-  ears-rip:
+  atl-ears-rip:
     build:
       dockerfile: Dockerfile.nginx
     container_name: "atl-ears-rip"
