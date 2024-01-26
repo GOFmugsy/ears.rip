@@ -16,29 +16,44 @@ class Boggs(Venue):
 		self.gigs = self.fetchGigs()
 
 	def fetchGigs(self):
-		gigsH = self.soup.find_all('tr')
+		json = self.getJSON(self.schedule)
 		gigs = []
 		
 		# Find bands
-		for gigH in gigsH:
+		for gigJ in json['events']:
 			bands = ''
 			doors = ''
 			url = ''
 			cost = ''
 
 			# Get band list
+			bands = gigJ['name']
 		
 			# Build Door Datetime object
+			doorsStr = gigJ['start_time']
+			year = re.search('^[0-9]{4}', doorsStr).group()
+			month = re.search('(-)([0-9]{2})(-)', doorsStr).group(2)
+			day = re.search('(-)([0-9]{2})(T)', doorsStr).group(2)
+			hour = re.search('(T)([0-9]{2})(:)', doorsStr).group(2)
+			minute = re.search('([0-9]{2}:)([0-9]{2})(:)', doorsStr).group(2)
+			dt = datetime.datetime(int(year), int(month), int(day), hour=int(hour), minute=int(minute))
 
 			# get Cost(s)
-
+			descStr = gigJ['long_description']
+			dollars = re.findall(r"\$[0-9]+", descStr)
+			if len(dollars) == 1:
+				cost = str(dollars[0])
+			else:
+				cost = str(dollars[0]) + ' - ' + str(dollars[-1])
+			
 			# get Link
+			urlPrefix = 'https://www.freshtix.com/events/'
+			urlPostfix = gigJ['url_name']
+			url = urlPrefix + urlPostfix
 				
 			# instantiate gig
-			# gig = Gig(bands, dt, link, cost)
-			# gigs.append(gig)
-
-			gigs.append(gigH)
+			gig = Gig(bands, dt, url, cost)
+			gigs.append(gig)
 
 		return gigs
 

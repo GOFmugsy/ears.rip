@@ -19,11 +19,13 @@ def main():
 	venues = [cls() for cls in Venue.__subclasses__()]
 
 	# test here
+	print('----------------------------------------------------------')
 	for venue in venues:
 		print(venue.name)
 		if venue.name == "Boggs Social":
 			for gig in venue.gigs:
-				print(gig)
+				print('GIG:')
+				print('\t' + gig)
 	
 
 if __name__ == "__main__":
