@@ -16,6 +16,21 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
+  nginx-exporter:
+    image: "nginx/nginx-prometheus-exporter:latest"
+    ports:
+      - 9113:9113
+    command:
+      - -nginx.scrape-uri
+      - http://127.0.0.1/metrics
+
+  prometheus:
+    build:
+      dockerfile: Dockerfile.prometheus
+    container_name: "ears-rip-prometheus"
+    ports:
+      - 9090:9090
+
   atl-ears-rip:
     build:
       dockerfile: Dockerfile.nginx
