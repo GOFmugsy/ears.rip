@@ -32,6 +32,7 @@ def main():
 
 def buildWebsite(venues):
 	web = dominate.document(title = city.upper() + ".EARS.RIP")
+	venueList = dominate.document(title = city.upper() + ".EARS.RIP venues")
 	daysInSched = 30
 	date = datetime.datetime.now()
 	now = datetime.datetime.now()
@@ -41,12 +42,19 @@ def buildWebsite(venues):
 	with web.head:
 		link(rel='stylesheet', href='css/style.css')
 
+	with venueList.head:
+		link(rel='stylesheet', href='css/style.css')
+
 	with web:
 		attr(cls='body')
 
 		with div():
 			attr(cls='title')
 			h1(city.upper() + '.EARS.RIP')
+
+		with div():
+			attr(cls='nav')
+			str(a('shows', href='index.html')) + ' || ' + str(a('venues', href='venues.html'))
 
 		with div():
 			attr(cls='schedule')
@@ -71,10 +79,31 @@ def buildWebsite(venues):
 			str(p(disclaimer))
 			str(p(now.strftime("%A, %d. %B %Y %-I:%M%p")))
 			str(p(sha))
-				
+
+	with venueList:
+		attr(cls='body')
+
+		with div():
+			attr(cls='title')
+			h1(city.upper() + '.EARS.RIP')
+
+		with div():
+			attr(cls='nav')
+			str(a('shows', href='index.html')) + ' || ' + str(a('venues', href='venues.html'))
+
+		with div():
+			attr(cls='schedule')
+			with div():
+				attr(cls='venueList')
+				for venue in venues:
+					p(a(venue.name, href=venue.url))
 
 	with open('../deploy/dev/web/index.html', 'w') as index:
 		index.write(str(web))
+
+	with open('../deploy/dev/web/venues.html', 'w') as index:
+		index.write(str(venueList))
+	
 	
 if __name__ == "__main__":
 	main()
