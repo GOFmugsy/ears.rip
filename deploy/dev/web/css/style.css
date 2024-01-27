@@ -1,6 +1,18 @@
 div.title {
 	text-align: center;
-	font-family: "Lucida Console", Courier, monospace
+	font-family: "Lucida Console", Courier, monospace;
+}
+
+div.nav {
+	text-align: center;
+	font-family: "Lucida Console", Courier, monospace;
+	margin-bottom: 5px;
+	a {
+		color: black;
+	}
+	p {
+		display: inline;
+	}
 }
 
 div.schedule {
@@ -9,7 +21,18 @@ div.schedule {
 	margin: 0 auto;
 	padding-top: 10px;
 	padding-bottom: 10px;
-	font-family: "Lucida Console", Courier, monospace
+	font-family: "Lucida Console", Courier, monospace;
+	a {
+		color: black;
+	}
+}
+
+div.venueList {
+	text-align: left;
+	margin-left: 20px;
+	a {
+		color: black;
+	}
 }
 
 div.gig {
