@@ -105,6 +105,13 @@ def buildWebsite(venues):
 
 	with open('../deploy/dev/web/venues.html', 'w') as index:
 		index.write(str(venueList))
+
+	with open('../deploy/prod/web/index.html', 'w') as index:
+		index.write(str(web))
+
+	with open('../deploy/prod/web/venues.html', 'w') as index:
+		index.write(str(venueList))
+	
 	
 	
 if __name__ == "__main__":
