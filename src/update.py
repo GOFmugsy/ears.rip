@@ -32,7 +32,8 @@ def main():
 
 def buildWebsite(venues):
 	web = dominate.document(title = city.upper() + ".EARS.RIP")
-	venueList = dominate.document(title = city.upper() + ".EARS.RIP venues")
+	venueList = dominate.document(title = city.upper() + ".EARS.RIP")
+
 	daysInSched = 30
 	date = datetime.datetime.now()
 	now = datetime.datetime.now()
@@ -40,13 +41,14 @@ def buildWebsite(venues):
 	sha = repo.head.object.hexsha
 
 	with web.head:
-		link(rel='stylesheet', href='css/style.css')
+		link(rel='stylesheet', type='text/css', href='/css/style.css')
+		link(rel='icon', type='image/x-icon', href='/favicon.ico')
 
 	with venueList.head:
-		link(rel='stylesheet', href='css/style.css')
+		link(rel='stylesheet', type='text/css', href='/css/style.css')
+		link(rel='icon', type='image/x-icon', href='/favicon.ico')
 
 	with web:
-		attr(cls='body')
 
 		with div():
 			attr(cls='title')
