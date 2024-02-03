@@ -11,66 +11,63 @@ class Earl(Venue):
 		self.geo = (33.740969965415346, -84.34589730897736)
 		self.address = "488 Flat Shoals Ave SE, Atlanta, GA 30316"
 		self.url = "https://badearl.com/"
-		self.schedule = "https://badearl.com/"
+		self.schedule = "https://www.freshtix.com/search?utf8=%E2%9C%93&query=The+EARL&start=&end=&state=GA&category=&commit=Search"
 		self.soup = self.getPage()
 		self.gigs = self.fetchGigs()
 
 	def fetchGigs(self):
-		gigsH = self.soup.find_all('div', 'show-listing-right')
+		json = self.getJSON(self.schedule)
 		gigs = []
-
-		for gigH in gigsH:
+		
+		# Find bands
+		for gigJ in json['events']:
 			bands = ''
 			doors = ''
 			url = ''
 			cost = ''
 
 			# Get band list
-			bandH = gigH.find_all('div', re.compile('show-listing-headliner|show-listing-support'))
-			headliner = re.search(r"(?<=>)(.*?)(?=<)", str(bandH[0])).group()
-			support = ''
-			if len(bandH) > 1:
-				for i in range(1, len(bandH)):
-					support = support + ' | ' + re.search(r"(?<=>)(.*?)(?=<)", str(bandH[i])).group()
-			bands = headliner + support
+			bands = gigJ['name']
+		
+			# Build Door Datetime object
+			doorsStr = gigJ['start_time']
+			year = re.search('^[0-9]{4}', doorsStr).group()
+			month = re.search('(-)([0-9]{2})(-)', doorsStr).group(2)
+			day = re.search('(-)([0-9]{2})(T)', doorsStr).group(2)
+			hour = re.search('(T)([0-9]{2})(:)', doorsStr).group(2)
+			minute = re.search('([0-9]{2}:)([0-9]{2})(:)', doorsStr).group(2)
+			dt = datetime.datetime(int(year), int(month), int(day), hour=int(hour), minute=int(minute))
 
-			# Build doors datetime
-			mxref = {'JAN': 1, 'FEB': 2, 'MAR': 3, 'APR': 4, 'MAY': 5, 'JUN': 6,
-			'JUL': 7, 'AUG': 8, 'SEP': 9, 'OCT': 10, 'NOV': 11, 'DEC': 12}
-
-			dateH = gigH.find_all('p', 'show-listing-date')
-			date = re.search(r"(?<=show-listing-date\">)(.*?)(?=<)", str(dateH)).group()
-			dsplit = date.split(' ')
-
-			timeH = gigH.find_all('p', 'show-listing-time')
-			timestr = re.search(r"(?<=show-listing-time\">)(.*?)(?= )", str(timeH[0])).group()
-			time = re.search(r"([0-9]+):([0-9]+)([ap]m)", timestr)
-			hour = int(time.group(1))
-			minute = int(time.group(2))
-			ampm = time.group(3)
-			if ampm.lower() == 'pm' and hour < 12:
-				hour = int(hour) + 12
-
-			dt = datetime.datetime(int(dsplit[3]), int(mxref[dsplit[1][0:3].upper()]), int(re.search('[0-9]+', dsplit[2]).group()), hour=hour, minute=minute)
-
-			# Get Cost(s)
-			costH = gigH.find_all('p', 'show-listing-price')
-			cost = 'NOT FOUND'
-			try:
-				cost = re.search(r"(\$[0-9]+)", str(costH[0])).group(0)
-			except:
-				print('can not find cost for gig at ' + self.name + ' on ' + str(dt))
-
-			# Get Link
-			linkH = gigH.find_all('a', string="More Info")
-			link = 'NO LINK'
-			try:
-				link = re.search('(href=")(' + self.url + '.*?)(">)', str(linkH)).group(2)
-			except:
-				print('can not find link for gig at ' + self.name + ' on ' + str(dt))
-
-			gig = Gig(bands, dt, link, cost)
+			# get Cost(s)
+			descStr = gigJ['long_description']
+			if descStr:
+				dollars = re.findall(r"\$[0-9]+", descStr)
+				if len(dollars) == 1:
+					cost = str(dollars[0])
+				elif len(dollars) > 1:
+					cost = str(dollars[0]) + ' - ' + str(dollars[-1])
+				else:
+					cost = "cost not found"
+			else:
+				cost = "cost not found"
+			
+			# get Link
+			urlPrefix = 'https://www.freshtix.com/events/'
+			urlPostfix = gigJ['url_name']
+			url = urlPrefix + urlPostfix
+				
+			# instantiate gig
+			gig = Gig(bands, dt, url, cost)
 			gigs.append(gig)
 
 		return gigs
+
+
+
+
+
+
+
+
+
 
