@@ -4,4 +4,5 @@ from .terminalwest import Terminalwest
 from .varietyplayhouse import VarietyPlayhouse
 from .boggs import Boggs
 from .starbar import StarBar
+from .masquerade import Masquerade
 

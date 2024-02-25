@@ -25,7 +25,7 @@ class Venue(ABC):
 	# If it has been, use the cached version. If not, then pull it and cache it.
   # 
   # Returns a BeautifulSoup object
-	def getPage(self):
+	def getPage(self, headers={}):
 		cache = '../tmp'
 		soup = ''
 		cachedFound = False
@@ -50,7 +50,7 @@ class Venue(ABC):
 		
 		if not cachedFound:
 			print("writing to cache: " + os.path.join(cache, self.name + '.html'))
-			page = requests.get(self.schedule)
+			page = requests.get(self.schedule, headers=headers)
 			html = page.text
 			with open(os.path.join(cache, self.name + '.html'), 'w') as c:
 				c.write(html)
