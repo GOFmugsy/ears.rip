@@ -10,6 +10,9 @@ import git
 
 city = "atl"
 disclaimer = "There is absolutely no guarantee of any kind provided with this page or any derivative of this page"
+aboutStr = ["This website is purposefully simple.",
+						"It's purpose is to inform about shows in " + city + " in one location",
+						"The list refreshes most nights and is informed by what the venues are posting on their websites"]
 
 import cities
 from cities.Venue import Venue
@@ -33,6 +36,7 @@ def main():
 def buildWebsite(venues):
 	web = dominate.document(title = city.upper() + ".EARS.RIP")
 	venueList = dominate.document(title = city.upper() + ".EARS.RIP")
+	about = dominate.document(title = city.upper() + ".EARS.RIP")
 
 	daysInSched = 30
 	date = datetime.datetime.now()
@@ -48,6 +52,10 @@ def buildWebsite(venues):
 		link(rel='stylesheet', type='text/css', href='/css/style.css')
 		link(rel='icon', type='image/x-icon', href='/favicon.ico')
 
+	with about.head:
+		link(rel='stylesheet', type='text/css', href='/css/style.css')
+		link(rel='icon', type='image/x-icon', href='/favicon.ico')
+
 	with web:
 
 		with div():
@@ -56,7 +64,7 @@ def buildWebsite(venues):
 
 		with div():
 			attr(cls='nav')
-			str(a('shows', href='index.html')) + ' || ' + str(a('venues', href='venues.html'))
+			str(a('shows', href='index.html')) + ' || ' + str(a('venues', href='venues.html')) + ' || ' + str(a('about', href='about.html'))
 
 		with div():
 			attr(cls='schedule')
@@ -91,7 +99,7 @@ def buildWebsite(venues):
 
 		with div():
 			attr(cls='nav')
-			str(a('shows', href='index.html')) + ' || ' + str(a('venues', href='venues.html'))
+			str(a('shows', href='index.html')) + ' || ' + str(a('venues', href='venues.html')) + ' || ' + str(a('about', href='about.html'))
 
 		with div():
 			attr(cls='schedule')
@@ -100,11 +108,44 @@ def buildWebsite(venues):
 				for venue in venues:
 					p(a(venue.name, href=venue.url))
 
+		with div():
+			attr(cls='footer')
+			str(p(disclaimer))
+			str(p(now.strftime("%A, %d. %B %Y %-I:%M%p")))
+			str(p(sha))
+
+	with about:
+		attr(cls='body')
+
+		with div():
+			attr(cls='title')
+			h1(city.upper() + '.EARS.RIP')
+
+		with div():
+			attr(cls='nav')
+			str(a('shows', href='index.html')) + ' || ' + str(a('venues', href='venues.html')) + ' || ' + str(a('about', href='about.html'))
+			
+		with div():
+			attr(cls='schedule')
+			with div().add(ul()):
+				attr(cls='venueList')
+				for i in aboutStr:
+					li(i)
+
+		with div():
+			attr(cls='footer')
+			str(p(disclaimer))
+			str(p(now.strftime("%A, %d. %B %Y %-I:%M%p")))
+			str(p(sha))
+
 	with open('../deploy/dev/web/index.html', 'w') as index:
 		index.write(str(web))
 
 	with open('../deploy/dev/web/venues.html', 'w') as index:
 		index.write(str(venueList))
+
+	with open('../deploy/dev/web/about.html', 'w') as index:
+		index.write(str(about))
 
 	with open('../deploy/prod/web/index.html', 'w') as index:
 		index.write(str(web))
@@ -112,6 +153,8 @@ def buildWebsite(venues):
 	with open('../deploy/prod/web/venues.html', 'w') as index:
 		index.write(str(venueList))
 	
+	with open('../deploy/prod/web/about.html', 'w') as index:
+		index.write(str(about))
 	
 	
 if __name__ == "__main__":
