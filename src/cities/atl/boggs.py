@@ -41,7 +41,9 @@ class Boggs(Venue):
 			# get Cost(s)
 			descStr = gigJ['long_description']
 			dollars = re.findall(r"\$[0-9]+", descStr)
-			if len(dollars) == 1:
+			if len(dollars) == 0:
+				cost = "NOT FOUND"
+			elif len(dollars) == 1:
 				cost = str(dollars[0])
 			else:
 				cost = str(dollars[0]) + ' - ' + str(dollars[-1])
