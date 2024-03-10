@@ -146,20 +146,20 @@ def buildWebsite(venues):
 	with open('../deploy/dev/web/index.html', 'w') as index:
 		index.write(str(web))
 
-	with open('../deploy/dev/web/venues.html', 'w') as index:
-		index.write(str(venueList))
+	with open('../deploy/dev/web/venues.html', 'w') as venuePage:
+		venuePage.write(str(venueList))
 
-	with open('../deploy/dev/web/about.html', 'w') as index:
-		index.write(str(about))
+	with open('../deploy/dev/web/about.html', 'w') as about:
+		about.write(str(about))
 
 	with open('../deploy/prod/web/index.html', 'w') as index:
 		index.write(str(web))
 
-	with open('../deploy/prod/web/venues.html', 'w') as index:
-		index.write(str(venueList))
+	with open('../deploy/prod/web/venues.html', 'w') as venuePage:
+		venuePage.write(str(venueList))
 	
-	with open('../deploy/prod/web/about.html', 'w') as index:
-		index.write(str(about))
+	with open('../deploy/prod/web/about.html', 'w') as about:
+		about.write(str(about))
 	
 if __name__ == "__main__":
 	main()
