@@ -10,9 +10,9 @@ import git
 
 city = "atl"
 disclaimer = "There is absolutely no guarantee of any kind provided with this page or any derivative of this page"
-aboutStr = ["This website is purposefully simple.",
+aboutStr = ["This website is intentionally simple.",
 						"It's purpose is to inform about shows in " + city + " in one location",
-						"The list refreshes most nights and is informed by what the venues are posting on their websites"]
+						"The list refreshes most nights and is mostly informed by what the venues are posting on their websites"]
 
 import cities
 from cities.Venue import Venue
@@ -68,21 +68,26 @@ def buildWebsite(venues):
 
 		with div():
 			attr(cls='schedule')
-			
-			for day in range(daysInSched):
-				for venue in venues:
-					for gig in venue.getGigs():
-						if gig.doors.date() == date.date():
-							with div():
-								attr(cls='gig')
-								with div():
-									attr(cls='bands')
-									h4(a(gig.bands, href=gig.url))
-								with div():
-									attr(cls='info')
-									str(a(venue.name, href=venue.url)) + str(p(' || ' + gig.cost + ' || ' + str(gig.doors.strftime("%A, %d. %B %Y %-I:%M%p"))))
+			with table().add(tbody()):
+				for day in range(daysInSched):
+					for venue in venues:
+						for gig in venue.getGigs():
+							if gig.doors.date() == date.date():
+								with tr():
+									with td().add(div()):
+										attr(cls='date')
+										str(p(gig.doors.strftime("%B")))
+										str(p(gig.doors.strftime("%d")))
+									with td().add(div()):
+										attr(cls='gig')
+										with div():
+											attr(cls='bands')
+											h4(a(gig.bands, href=gig.url))
+											with div():
+												attr(cls='info')
+												str(a(venue.name, href=venue.url)) + str(p(' || ' + gig.cost + ' || ' + str(gig.doors.strftime("%A, %d. %B %Y %-I:%M%p"))))
 
-				date += datetime.timedelta(days=1)
+					date += datetime.timedelta(days=1)
 
 		with div():
 			attr(cls='footer')
@@ -155,7 +160,6 @@ def buildWebsite(venues):
 	
 	with open('../deploy/prod/web/about.html', 'w') as index:
 		index.write(str(about))
-	
 	
 if __name__ == "__main__":
 	main()

@@ -70,3 +70,7 @@ div.footer {
 	text-align: center;
 	font-size: 10px;
 }
+
+div.date {
+	border-right: 1px solid black;
+}

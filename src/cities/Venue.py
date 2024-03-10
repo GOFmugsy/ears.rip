@@ -128,3 +128,23 @@ class Venue(ABC):
 	@abstractmethod
 	def fetchGigs(self):
 		pass
+
+	# Get all gigs for a day - expects a datetime object
+	def getGigsByDate(self, dt):
+		res = []
+		for gig in self.gigs:
+			if gig.doors.Date == dt.Date:
+				res.append(gig)
+
+
+
+
+
+
+
+
+
+
+
+
+	
