@@ -70,22 +70,34 @@ def buildWebsite(venues):
 			attr(cls='schedule')
 			with table().add(tbody()):
 				for day in range(daysInSched):
+					gigsToday = 0
 					for venue in venues:
-						for gig in venue.getGigs():
-							if gig.doors.date() == date.date():
-								with tr():
-									with td().add(div()):
-										attr(cls='date')
-										str(p(gig.doors.strftime("%B")))
-										str(p(gig.doors.strftime("%d")))
-									with td().add(div()):
-										attr(cls='gig')
+						curGigs = venue.getGigsByDate(date)
+						if curGigs and len(curGigs) > 0:
+							gigsToday += len(curGigs)
+					gigCount = 0
+					with tr():
+						if gigsToday > 0:
+							with td():
+								# attr(rowspan=gigsToday)
+								attr(cls='date')
+								with div():
+									#str(p(gig.doors.strftime("%a").upper()))
+									#str(p(gig.doors.strftime("%B %d")))
+									str(p(date.strftime("%a").upper()))
+									str(p(date.strftime("%B %d")))
+						with td():
+							for venue in venues:
+								for gig in venue.getGigs():
+									if gig.doors.date() == date.date():
 										with div():
-											attr(cls='bands')
-											h4(a(gig.bands, href=gig.url))
+											attr(cls='gig')
 											with div():
-												attr(cls='info')
-												str(a(venue.name, href=venue.url)) + str(p(' || ' + gig.cost + ' || ' + str(gig.doors.strftime("%A, %d. %B %Y %-I:%M%p"))))
+												attr(cls='bands')
+												h4(a(gig.bands, href=gig.url))
+												with div():
+													attr(cls='info')
+													str(a(venue.name, href=venue.url)) + str(p(' || ' + gig.cost + ' || ' + str(gig.doors.strftime("%-I:%M%p"))))
 
 					date += datetime.timedelta(days=1)
 

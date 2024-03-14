@@ -133,8 +133,9 @@ class Venue(ABC):
 	def getGigsByDate(self, dt):
 		res = []
 		for gig in self.gigs:
-			if gig.doors.Date == dt.Date:
+			if gig.doors.date() == dt.date():
 				res.append(gig)
+		return res
 
 
 
