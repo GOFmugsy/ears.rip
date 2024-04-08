@@ -28,6 +28,9 @@ class Fivetwonine(Venue):
 
 			# Get band list
 			bandH = gigH.find_all(re.compile('h[34]'), re.compile('event-headliners|event-bands'))
+			if len(bandH) == 0:
+				print("Headliner not found for show at " + self.name + " skipping")
+				continue
 			headliner = re.search(r"(?<=>)(.*?)(?=<)", str(bandH[0])).group()
 			support = ''
 			if len(bandH) > 1:

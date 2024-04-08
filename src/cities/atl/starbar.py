@@ -40,7 +40,12 @@ class StarBar(Venue):
 
 			# get Cost(s)
 			descStr = gigJ['long_description']
-			dollars = re.findall(r"\$[0-9]+", descStr)
+			dollars = "not found"
+			try:
+				dollars = re.findall(r"\$[0-9]+", descStr)[0]
+			except:
+				print("dollars not found for: " + str(bands))
+
 			if len(dollars) == 1:
 				cost = str(dollars[0])
 			else:

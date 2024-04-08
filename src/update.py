@@ -10,6 +10,9 @@ import git
 
 city = "atl"
 disclaimer = "There is absolutely no guarantee of any kind provided with this page or any derivative of this page"
+aboutStr = ["This website is intentionally simple.",
+						"It's purpose is to inform about shows in " + city + " in one location",
+						"The list refreshes most nights and is mostly informed by what the venues are posting on their websites"]
 
 import cities
 from cities.Venue import Venue
@@ -32,7 +35,9 @@ def main():
 
 def buildWebsite(venues):
 	web = dominate.document(title = city.upper() + ".EARS.RIP")
-	venueList = dominate.document(title = city.upper() + ".EARS.RIP venues")
+	venueList = dominate.document(title = city.upper() + ".EARS.RIP")
+	about = dominate.document(title = city.upper() + ".EARS.RIP")
+
 	daysInSched = 30
 	date = datetime.datetime.now()
 	now = datetime.datetime.now()
@@ -40,13 +45,18 @@ def buildWebsite(venues):
 	sha = repo.head.object.hexsha
 
 	with web.head:
-		link(rel='stylesheet', href='css/style.css')
+		link(rel='stylesheet', type='text/css', href='/css/style.css')
+		link(rel='icon', type='image/x-icon', href='/favicon.ico')
 
 	with venueList.head:
-		link(rel='stylesheet', href='css/style.css')
+		link(rel='stylesheet', type='text/css', href='/css/style.css')
+		link(rel='icon', type='image/x-icon', href='/favicon.ico')
+
+	with about.head:
+		link(rel='stylesheet', type='text/css', href='/css/style.css')
+		link(rel='icon', type='image/x-icon', href='/favicon.ico')
 
 	with web:
-		attr(cls='body')
 
 		with div():
 			attr(cls='title')
@@ -54,25 +64,42 @@ def buildWebsite(venues):
 
 		with div():
 			attr(cls='nav')
-			str(a('shows', href='index.html')) + ' || ' + str(a('venues', href='venues.html'))
+			str(a('shows', href='index.html')) + ' || ' + str(a('venues', href='venues.html')) + ' || ' + str(a('about', href='about.html'))
 
 		with div():
 			attr(cls='schedule')
-			
-			for day in range(daysInSched):
-				for venue in venues:
-					for gig in venue.getGigs():
-						if gig.doors.date() == date.date():
-							with div():
-								attr(cls='gig')
+			with table().add(tbody()):
+				for day in range(daysInSched):
+					gigsToday = 0
+					for venue in venues:
+						curGigs = venue.getGigsByDate(date)
+						if curGigs and len(curGigs) > 0:
+							gigsToday += len(curGigs)
+					gigCount = 0
+					with tr():
+						if gigsToday > 0:
+							with td():
+								# attr(rowspan=gigsToday)
+								attr(cls='date')
 								with div():
-									attr(cls='bands')
-									h4(a(gig.bands, href=gig.url))
-								with div():
-									attr(cls='info')
-									str(a(venue.name, href=venue.url)) + str(p(' || ' + gig.cost + ' || ' + str(gig.doors.strftime("%A, %d. %B %Y %-I:%M%p"))))
+									#str(p(gig.doors.strftime("%a").upper()))
+									#str(p(gig.doors.strftime("%B %d")))
+									str(p(date.strftime("%a").upper()))
+									str(p(date.strftime("%B %d")))
+						with td():
+							for venue in venues:
+								for gig in venue.getGigs():
+									if gig.doors.date() == date.date():
+										with div():
+											attr(cls='gig')
+											with div():
+												attr(cls='bands')
+												h4(a(gig.bands, href=gig.url))
+												with div():
+													attr(cls='info')
+													str(a(venue.name, href=venue.url)) + str(p(' || ' + gig.cost + ' || ' + str(gig.doors.strftime("%-I:%M%p"))))
 
-				date += datetime.timedelta(days=1)
+					date += datetime.timedelta(days=1)
 
 		with div():
 			attr(cls='footer')
@@ -89,7 +116,7 @@ def buildWebsite(venues):
 
 		with div():
 			attr(cls='nav')
-			str(a('shows', href='index.html')) + ' || ' + str(a('venues', href='venues.html'))
+			str(a('shows', href='index.html')) + ' || ' + str(a('venues', href='venues.html')) + ' || ' + str(a('about', href='about.html'))
 
 		with div():
 			attr(cls='schedule')
@@ -98,12 +125,53 @@ def buildWebsite(venues):
 				for venue in venues:
 					p(a(venue.name, href=venue.url))
 
+		with div():
+			attr(cls='footer')
+			str(p(disclaimer))
+			str(p(now.strftime("%A, %d. %B %Y %-I:%M%p")))
+			str(p(sha))
+
+	with about:
+		attr(cls='body')
+
+		with div():
+			attr(cls='title')
+			h1(city.upper() + '.EARS.RIP')
+
+		with div():
+			attr(cls='nav')
+			str(a('shows', href='index.html')) + ' || ' + str(a('venues', href='venues.html')) + ' || ' + str(a('about', href='about.html'))
+			
+		with div():
+			attr(cls='schedule')
+			with div().add(ul()):
+				attr(cls='venueList')
+				for i in aboutStr:
+					li(i)
+
+		with div():
+			attr(cls='footer')
+			str(p(disclaimer))
+			str(p(now.strftime("%A, %d. %B %Y %-I:%M%p")))
+			str(p(sha))
+
 	with open('../deploy/dev/web/index.html', 'w') as index:
 		index.write(str(web))
 
-	with open('../deploy/dev/web/venues.html', 'w') as index:
-		index.write(str(venueList))
+	with open('../deploy/dev/web/venues.html', 'w') as venuePage:
+		venuePage.write(str(venueList))
+
+	with open('../deploy/dev/web/about.html', 'w') as aboutPage:
+		aboutPage.write(str(about))
+
+	with open('../deploy/prod/web/index.html', 'w') as index:
+		index.write(str(web))
+
+	with open('../deploy/prod/web/venues.html', 'w') as venuePage:
+		venuePage.write(str(venueList))
 	
+	with open('../deploy/prod/web/about.html', 'w') as aboutPage:
+		aboutPage.write(str(about))
 	
 if __name__ == "__main__":
 	main()
