@@ -59,7 +59,7 @@ class Masquerade(Venue):
 
 			# get Cost(s)
 			costComp = gigH.find('div', 'time-show').get_text()
-			costs = re.findall(r"\$[0-9]+", costComp)
+			costs = re.findall(r"\$[0-9]+|FREE", costComp)
 			cost = ''
 			if len(costs) > 1:
 				cost = costs[0] + ' - ' + costs[-1]

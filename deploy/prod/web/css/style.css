@@ -22,6 +22,7 @@ div.schedule {
 	padding-top: 10px;
 	padding-bottom: 10px;
 	font-family: "Lucida Console", Courier, monospace;
+	font-size: medium;
 	a {
 		color: black;
 	}
@@ -68,7 +69,7 @@ div.info {
 div.footer {
 	margin-top: 10px;
 	text-align: center;
-	font-size: 10px;
+	font-size: small;
 }
 
 table {
