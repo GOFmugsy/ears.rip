@@ -73,7 +73,7 @@ class Masquerade(Venue):
 				continue
 
 			# get Link to tickets
-			linkH = gigH.find('a', 'btn btn-purple btn-full')
+			linkH = gigH.find('a', 'btn btn-grey btn-full')
 			url = linkH['href']
 
 			# instantiate gig
