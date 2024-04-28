@@ -5,7 +5,7 @@ import datetime
 from ..Venue import Venue
 from ..Gig import Gig
 
-class EarlHTML(Venue):
+class Earl(Venue):
 	def __init__(self):
 		self.name = "The Earl"
 		self.geo = (33.740969965415346, -84.34589730897736)
@@ -18,7 +18,7 @@ class EarlHTML(Venue):
 	def fetchGigs(self):
 		gigsH = self.soup.find_all('div', 'show-listing-right')
 		gigs = []
-
+		
 		for gigH in gigsH:
 			bands = ''
 			doors = ''
