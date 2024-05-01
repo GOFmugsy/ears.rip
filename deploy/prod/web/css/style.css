@@ -1,3 +1,5 @@
+html,body { -webkit-text-size-adjust:none; }
+
 div.title {
 	text-align: center;
 	font-family: "Lucida Console", Courier, monospace;
