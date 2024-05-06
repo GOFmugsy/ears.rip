@@ -5,4 +5,5 @@ from .varietyplayhouse import VarietyPlayhouse
 from .boggs import Boggs
 from .starbar import StarBar
 from .masquerade import Masquerade
+from .aislefive import AisleFive
 
