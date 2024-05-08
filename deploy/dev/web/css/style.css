@@ -1,3 +1,5 @@
+html,body { -webkit-text-size-adjust:none; }
+
 div.title {
 	text-align: center;
 	font-family: "Lucida Console", Courier, monospace;
@@ -22,6 +24,7 @@ div.schedule {
 	padding-top: 10px;
 	padding-bottom: 10px;
 	font-family: "Lucida Console", Courier, monospace;
+	font-size: medium;
 	a {
 		color: black;
 	}
@@ -68,7 +71,7 @@ div.info {
 div.footer {
 	margin-top: 10px;
 	text-align: center;
-	font-size: 10px;
+	font-size: small;
 }
 
 table {
@@ -76,6 +79,6 @@ table {
 }
 
 td.date {
-	border-right: 1px solid black;
+	border-right: 2px solid black;
 	padding: 6px;
 }

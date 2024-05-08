@@ -59,7 +59,7 @@ class Terminalwest(Venue):
 				cost += " - " + gigJ['doorPrice']
 
 			# Get link
-			link = gigJ['ticketing']['url']
+			link = "https://terminalwestatl.com/events/detail/?event_id=" + gigJ['eventId']
 
 			# instantiate gig
 			gig = Gig(bands, dt, link, cost)
