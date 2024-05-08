@@ -11,63 +11,72 @@ class StarBar(Venue):
 		self.geo = ('33.766278', '-84.348883')
 		self.address = "437 Moreland Ave NE, Atlanta, GA 30307"
 		self.url = "https://www.starbaratl.bar/"
-		self.schedule = "https://www.freshtix.com/search?utf8=%E2%9C%93&query=Star+Bar&start=&end=&state=GA&category=&commit=Search"
+		self.schedule = self.url
 		self.soup = self.getPage()
 		self.gigs = self.fetchGigs()
 
 	def fetchGigs(self):
-		json = self.getJSON(self.schedule)
+		gigsH = self.soup.find_all('article', 'eventlist-event')
 		gigs = []
 		
-		# Find bands
-		for gigJ in json['events']:
+		for gigH in gigsH:
 			bands = ''
 			doors = ''
 			url = ''
 			cost = ''
 
 			# Get band list
-			bands = gigJ['name']
-		
-			# Build Door Datetime object
-			doorsStr = gigJ['start_time']
-			year = re.search('^[0-9]{4}', doorsStr).group()
-			month = re.search('(-)([0-9]{2})(-)', doorsStr).group(2)
-			day = re.search('(-)([0-9]{2})(T)', doorsStr).group(2)
-			hour = re.search('(T)([0-9]{2})(:)', doorsStr).group(2)
-			minute = re.search('([0-9]{2}:)([0-9]{2})(:)', doorsStr).group(2)
-			dt = datetime.datetime(int(year), int(month), int(day), hour=int(hour), minute=int(minute))
+			bandH = gigH.find('a', 'eventlist-title-link')
+			headliner = bandH.get_text()
+			support = gigH.find_all('p', {'style': 'white-space:pre-wrap;'})
+			bands = headliner
+			for i in support:
+				if not re.search('\$|doors|TIX', i.get_text()):
+					bands += " | " + str(i.get_text())
 
-			# get Cost(s)
-			descStr = gigJ['long_description']
-			dollars = "not found"
+			# Build doors datetime
+			mxref = {'JAN': 1, 'FEB': 2, 'MAR': 3, 'APR': 4, 'MAY': 5, 'JUN': 6,
+			'JUL': 7, 'AUG': 8, 'SEP': 9, 'OCT': 10, 'NOV': 11, 'DEC': 12}
+
+			dateH = gigH.find('time', 'event-date').get_text()
+			dsplit = dateH.split(' ')
+			dow = dsplit[0][0:-1]
+			month = dsplit[1]
+			if(len(month) > 3):
+				month = month[0:3]
+			day = dsplit[2][0:-1]
+
+			timeH = gigH.find('time', re.compile('event-time-localized'))
+			time = timeH.get_text()
+			tsplit = time.split(':')
+			hour = int(tsplit[0])
+			minute = int(tsplit[1][0:2])
+			ampm = tsplit[1][-2:]
+			if ampm.lower() == 'pm' and hour < 12:
+				hour = int(hour) + 12
+
+			dt = datetime.datetime(2024, mxref[month.upper()], int(day), hour=int(hour), minute=int(minute))
+
+			# Get Cost(s)
+			costH = gigH.find_all('p', {'style': 'white-space:pre-wrap;'})
+			cost = 'NOT FOUND'
 			try:
-				dollars = re.findall(r"\$[0-9]+", descStr)[0]
+				for i in costH:
+					if re.search('\$[0-9]+', i.get_text()):
+						cost = re.search(r"(\$[0-9]+)", i.get_text()).group(0)
 			except:
-				print("dollars not found for: " + str(bands))
+				print('can not find cost for gig at ' + self.name + ' on ' + str(dt))
 
-			if len(dollars) == 1:
-				cost = str(dollars[0])
-			else:
-				cost = str(dollars[0]) + ' - ' + str(dollars[-1])
-			
-			# get Link
-			urlPrefix = 'https://www.freshtix.com/events/'
-			urlPostfix = gigJ['url_name']
-			url = urlPrefix + urlPostfix
-				
-			# instantiate gig
-			gig = Gig(bands, dt, url, cost)
+			# Get Link
+			linkH = gigH.find('a', 'eventlist-title-link')
+			link = 'NO LINK'
+			try:
+				link = self.url[0:-1] + linkH['href']
+			except:
+				print('can not find link for gig at ' + self.name + ' on ' + str(dt))
+
+			gig = Gig(bands, dt, link, cost)
 			gigs.append(gig)
 
 		return gigs
-
-
-
-
-
-
-
-
-
 
