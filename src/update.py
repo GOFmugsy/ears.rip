@@ -3,6 +3,7 @@
 import re
 import pkgutil
 import importlib
+import os
 import dominate
 from dominate.tags import *
 import datetime
@@ -22,6 +23,10 @@ importlib.import_module('cities.' + city)
 
 def main():
 	venues = []
+
+	cityDirs = next(os.walk('./cities/'))[1]
+	for city in cityDirs:
+		print("DEBUG: " + city)
 	
 	# import all modules in city package
 	for loader, name, ispkg in pkgutil.walk_packages(path=['./cities/' + city + '/']):

@@ -1,0 +1,2 @@
+from .eulogy import Eulogy
+
