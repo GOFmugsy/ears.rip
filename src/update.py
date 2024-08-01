@@ -31,6 +31,11 @@ def main():
 	print("Fetching and parsing venue information ... ")
 	venues = [cls() for cls in Venue.__subclasses__()]
 
+	# Run report
+	for venue in venues:
+		print(venue.name + ":")
+		print("\tgigs: " + str(len(venue.gigs)))
+
 	buildWebsite(venues)
 
 def buildWebsite(venues):
