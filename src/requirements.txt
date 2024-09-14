@@ -3,4 +3,5 @@ dominate
 requests
 lxml
 gitpython
+icalendar
 

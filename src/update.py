@@ -6,6 +6,7 @@ import importlib
 import dominate
 from dominate.tags import *
 import datetime
+# import icalendar
 import git
 
 city = "atl"
@@ -13,12 +14,12 @@ disclaimer = "There is absolutely no guarantee of any kind provided with this pa
 aboutStr = ["This website is intentionally simple.",
 						"It's purpose is to inform about shows in " + city + " in one location",
 						"The list refreshes most nights and is mostly informed by what the venues are posting on their websites"]
+daysInSched = 30
 
 import cities
 from cities.Venue import Venue
 from cities.Gig import Gig
 importlib.import_module('cities.' + city)
-
 
 def main():
 	venues = []
@@ -38,12 +39,14 @@ def main():
 
 	buildWebsite(venues)
 
+def buildICSs(venues):
+	pass
+
 def buildWebsite(venues):
 	web = dominate.document(title = city.upper() + ".EARS.RIP")
 	venueList = dominate.document(title = city.upper() + ".EARS.RIP")
 	about = dominate.document(title = city.upper() + ".EARS.RIP")
 
-	daysInSched = 30
 	date = datetime.datetime.now()
 	now = datetime.datetime.now()
 	repo = git.Repo(search_parent_directories=True)
@@ -84,11 +87,8 @@ def buildWebsite(venues):
 					with tr():
 						if gigsToday > 0:
 							with td():
-								# attr(rowspan=gigsToday)
 								attr(cls='date')
 								with div():
-									#str(p(gig.doors.strftime("%a").upper()))
-									#str(p(gig.doors.strftime("%B %d")))
 									str(p(date.strftime("%a").upper()))
 									str(p(date.strftime("%B %d")))
 						with td():
