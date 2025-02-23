@@ -1,4 +1,5 @@
 import datetime
+import uuid
 
 class Gig:
 	def __init__(self, bands, doors, url, cost):
@@ -6,6 +7,7 @@ class Gig:
 		self.doors = doors
 		self.url = url
 		self.cost = cost
+		self.uid = str(uuid.uuid4())
 
 	def __str__(self):
 		return r"bands: " + self.bands + "\ndoors: " + str(self.doors) + "\nurl: " + self.url + "\ncost: " + self.cost + "\n"

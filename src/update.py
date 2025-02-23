@@ -65,10 +65,12 @@ def buildICSs(venues):
 
 			cal.add_component(e)
 
-			f = open(icsdirdev + venue.name + '-' + gig.doors.strftime("%m%d%Y-%H:%M") + '.ics', 'wb')
+			#f = open(icsdirdev + venue.name + '-' + gig.doors.strftime("%m%d%Y-%H:%M") + '.ics', 'wb')
+			f = open(icsdirdev + gig.uid + '.ics', 'wb')
 			f.write(cal.to_ical())
 			f.close()
-			f = open(icsdirprod + venue.name + '-' + gig.doors.strftime("%m%d%Y-%H:%M") + '.ics', 'wb')
+			#f = open(icsdirprod + venue.name + '-' + gig.doors.strftime("%m%d%Y-%H:%M") + '.ics', 'wb')
+			f = open(icsdirprod + gig.uid + '.ics', 'wb')
 			f.write(cal.to_ical())
 			f.close()
 
