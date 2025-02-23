@@ -61,6 +61,8 @@ def buildICSs(venues):
 			# tz = dateutil.tz.tzstr("America/New_York")
 			e.add('summary', gig.bands)
 			e["X-DT-DATEUTIL"] = icalendar.vDatetime(gig.doors)
+			e["dtstart"] = icalendar.vDatetime(gig.doors)
+			e["dtend"] = icalendar.vDatetime(gig.doors + datetime.timedelta(hours = 2))
 			e['location'] = icalendar.vText(venue.name + ' - ' + venue.address)
 
 			cal.add_component(e)
@@ -134,7 +136,7 @@ def buildWebsite(venues):
 												h4(a(gig.bands, href=gig.url))
 												with div():
 													attr(cls='info')
-													str(a(venue.name, href=venue.url)) + str(p(' || ' + gig.cost + ' || ' + str(gig.doors.strftime("%-I:%M%p"))))
+													str(a(venue.name, href=venue.url)) + str(p(' || ')) + str(a('ics', href='events-ics/' + gig.uid + '.ics')) + str(p(' || ' + gig.cost + ' || ' + str(gig.doors.strftime("%-I:%M%p"))))
 
 					date += datetime.timedelta(days=1)
 
