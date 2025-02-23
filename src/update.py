@@ -6,19 +6,22 @@ import importlib
 import dominate
 from dominate.tags import *
 import datetime
+import icalendar
 import git
+import os
+import uuid
 
 city = "atl"
 disclaimer = "There is absolutely no guarantee of any kind provided with this page or any derivative of this page"
 aboutStr = ["This website is intentionally simple.",
 						"It's purpose is to inform about shows in " + city + " in one location",
 						"The list refreshes most nights and is mostly informed by what the venues are posting on their websites"]
+daysInSched = 30
 
 import cities
 from cities.Venue import Venue
 from cities.Gig import Gig
 importlib.import_module('cities.' + city)
-
 
 def main():
 	venues = []
@@ -36,14 +39,48 @@ def main():
 		print(venue.name + ":")
 		print("\tgigs: " + str(len(venue.gigs)))
 
+	buildICSs(venues)
 	buildWebsite(venues)
+
+def buildICSs(venues):
+	icsdirdev = '../deploy/dev/web/events-ics/'
+	icsdirprod = '../deploy/prod/web/events-ics/'
+	# Clear old ICS files
+	oldICSdev = [ f for f in os.listdir(icsdirdev) if f.endswith(".ics") ]
+	for f in oldICSdev:
+		os.remove(os.path.join(icsdirdev, f))
+	oldICSprod = [ f for f in os.listdir(icsdirprod) if f.endswith(".ics") ]
+	for f in oldICSprod:
+		os.remove(os.path.join(icsdirprod, f))
+
+	# Build new ICS files
+	for venue in venues:
+		for gig in venue.gigs:
+			cal = icalendar.Calendar()
+			e = icalendar.Event()
+			# tz = dateutil.tz.tzstr("America/New_York")
+			e.add('summary', gig.bands)
+			e["X-DT-DATEUTIL"] = icalendar.vDatetime(gig.doors)
+			e["dtstart"] = icalendar.vDatetime(gig.doors)
+			e["dtend"] = icalendar.vDatetime(gig.doors + datetime.timedelta(hours = 2))
+			e['location'] = icalendar.vText(venue.name + ' - ' + venue.address)
+
+			cal.add_component(e)
+
+			#f = open(icsdirdev + venue.name + '-' + gig.doors.strftime("%m%d%Y-%H:%M") + '.ics', 'wb')
+			f = open(icsdirdev + gig.uid + '.ics', 'wb')
+			f.write(cal.to_ical())
+			f.close()
+			#f = open(icsdirprod + venue.name + '-' + gig.doors.strftime("%m%d%Y-%H:%M") + '.ics', 'wb')
+			f = open(icsdirprod + gig.uid + '.ics', 'wb')
+			f.write(cal.to_ical())
+			f.close()
 
 def buildWebsite(venues):
 	web = dominate.document(title = city.upper() + ".EARS.RIP")
 	venueList = dominate.document(title = city.upper() + ".EARS.RIP")
 	about = dominate.document(title = city.upper() + ".EARS.RIP")
 
-	daysInSched = 30
 	date = datetime.datetime.now()
 	now = datetime.datetime.now()
 	repo = git.Repo(search_parent_directories=True)
@@ -84,11 +121,8 @@ def buildWebsite(venues):
 					with tr():
 						if gigsToday > 0:
 							with td():
-								# attr(rowspan=gigsToday)
 								attr(cls='date')
 								with div():
-									#str(p(gig.doors.strftime("%a").upper()))
-									#str(p(gig.doors.strftime("%B %d")))
 									str(p(date.strftime("%a").upper()))
 									str(p(date.strftime("%B %d")))
 						with td():
@@ -102,7 +136,7 @@ def buildWebsite(venues):
 												h4(a(gig.bands, href=gig.url))
 												with div():
 													attr(cls='info')
-													str(a(venue.name, href=venue.url)) + str(p(' || ' + gig.cost + ' || ' + str(gig.doors.strftime("%-I:%M%p"))))
+													str(a(venue.name, href=venue.url)) + str(p(' || ')) + str(a('ics', href='events-ics/' + gig.uid + '.ics')) + str(p(' || ' + gig.cost + ' || ' + str(gig.doors.strftime("%-I:%M%p"))))
 
 					date += datetime.timedelta(days=1)
 

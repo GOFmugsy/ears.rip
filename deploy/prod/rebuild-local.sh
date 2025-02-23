@@ -1,2 +1,2 @@
-docker compose up -d --build
+docker compose -p "atl-ears-rip-prod" up -d --build
 docker image prune -f
