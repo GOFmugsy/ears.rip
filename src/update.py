@@ -6,7 +6,7 @@ import importlib
 import dominate
 from dominate.tags import *
 import datetime
-# import icalendar
+import icalendar
 import git
 
 city = "atl"
@@ -37,10 +37,22 @@ def main():
 		print(venue.name + ":")
 		print("\tgigs: " + str(len(venue.gigs)))
 
+	buildICSs(venues)
 	buildWebsite(venues)
 
 def buildICSs(venues):
-	pass
+	for venue in venues:
+		for gig in venue.gigs:
+			cal = icalendar.Calendar()
+			e = icalendar.Event()
+			# tz = dateutil.tz.tzstr("America/New_York")
+			e["X-DT-DATEUTIL"] = icalendar.vDatetime(gig.doors)
+
+			cal.add_component(e)
+
+			f = open('events-ics/' + venue.name + '-' + gig.doors.strftime("%m%d%Y-%H:%M") + '.ics', 'wb')
+			f.write(cal.to_ical())
+			f.close()
 
 def buildWebsite(venues):
 	web = dominate.document(title = city.upper() + ".EARS.RIP")
