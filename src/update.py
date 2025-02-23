@@ -8,6 +8,8 @@ from dominate.tags import *
 import datetime
 import icalendar
 import git
+import os
+import uuid
 
 city = "atl"
 disclaimer = "There is absolutely no guarantee of any kind provided with this page or any derivative of this page"
@@ -41,16 +43,32 @@ def main():
 	buildWebsite(venues)
 
 def buildICSs(venues):
+	icsdirdev = '../deploy/dev/web/events-ics/'
+	icsdirprod = '../deploy/prod/web/events-ics/'
+	# Clear old ICS files
+	oldICSdev = [ f for f in os.listdir(icsdirdev) if f.endswith(".ics") ]
+	for f in oldICSdev:
+		os.remove(os.path.join(icsdirdev, f))
+	oldICSprod = [ f for f in os.listdir(icsdirprod) if f.endswith(".ics") ]
+	for f in oldICSprod:
+		os.remove(os.path.join(icsdirprod, f))
+
+	# Build new ICS files
 	for venue in venues:
 		for gig in venue.gigs:
 			cal = icalendar.Calendar()
 			e = icalendar.Event()
 			# tz = dateutil.tz.tzstr("America/New_York")
+			e.add('summary', gig.bands)
 			e["X-DT-DATEUTIL"] = icalendar.vDatetime(gig.doors)
+			e['location'] = icalendar.vText(venue.name + ' - ' + venue.address)
 
 			cal.add_component(e)
 
-			f = open('events-ics/' + venue.name + '-' + gig.doors.strftime("%m%d%Y-%H:%M") + '.ics', 'wb')
+			f = open(icsdirdev + venue.name + '-' + gig.doors.strftime("%m%d%Y-%H:%M") + '.ics', 'wb')
+			f.write(cal.to_ical())
+			f.close()
+			f = open(icsdirprod + venue.name + '-' + gig.doors.strftime("%m%d%Y-%H:%M") + '.ics', 'wb')
 			f.write(cal.to_ical())
 			f.close()
 
