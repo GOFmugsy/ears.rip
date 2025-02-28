@@ -63,6 +63,8 @@ class Masquerade(Venue):
 			cost = ''
 			if len(costs) > 1:
 				cost = costs[0] + ' - ' + costs[-1]
+			elif len(costs) == 0:
+				cost = "?"
 			else:
 				cost = costs[0]
 
