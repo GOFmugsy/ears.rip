@@ -58,7 +58,7 @@ class Fivetwonine(Venue):
 				hour = int(hour) + 12
 
 			dsplit = date.split(' ')
-			dt = datetime.datetime(int(dsplit[2]), int(mxref[dsplit[0].upper()]), int(dsplit[1][0:2]), hour=hour)
+			dt = datetime.datetime(int(dsplit[2]), int(mxref[dsplit[0].upper()]), int(dsplit[1][0:2]), hour=int(hour))
 
 			# get Cost(s)
 			costH = gigH.find_all('div', 'event-meta')
