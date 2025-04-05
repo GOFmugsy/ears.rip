@@ -52,7 +52,7 @@ class Masquerade(Venue):
 			hour = int(tsplit[0])
 			minute = int(tsplit[1])
 			ampm = dsplit[4]
-			if ampm == 'pm':
+			if ampm == 'pm' and hour != 12:
 				hour = hour + 12
 
 			dt = datetime.datetime(year, month, day, hour=hour, minute=minute)
