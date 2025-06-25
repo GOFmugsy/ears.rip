@@ -54,7 +54,7 @@ class Fivetwonine(Venue):
 			tsplit = time.split(' ')
 			hour = re.search(r"(^[0-9]+)(:)", tsplit[0]).group(1)
 			ampm = tsplit[1]
-			if ampm == 'pm':
+			if ampm == 'pm' and int(hour) != 12:
 				hour = int(hour) + 12
 
 			dsplit = date.split(' ')
