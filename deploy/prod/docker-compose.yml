@@ -47,7 +47,9 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.grafana-atl-ears-rip.rule=Host(`grafana.atl.ears.rip`, `grafana.ears.rip`)"
-      - "traefik.http.routers.grafana-atl-ears-rip.entrypoints=web"
+      - "traefik.http.routers.grafana-atl-ears-rip.entrypoints=websecure"
+      - "traefik.http.routers.grafana-atl-ears-rip.tls=true"
+      - "traefik.http.routers.grafana-atl-ears-rip.tls.certresolver=acmeresolver"
 
   atl-ears-rip:
     build:
