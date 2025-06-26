@@ -10,8 +10,11 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesResolvers.acmeresolver.acme.httpChallenge.entryPoint=web"
     ports:
       - "80:80"
+      - "443:443"
       - "8080:8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
@@ -40,7 +43,7 @@ services:
       - grafana-data:/var/lib/grafana
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.grafana-atl-ears-rip.rule=Host(`grafana.atl.ears.rip.local`, `grafana.atl.ears.rip`, `grafana.ears.rip`)"
+      - "traefik.http.routers.grafana-atl-ears-rip.rule=Host(`grafana.atl.ears.rip`, `grafana.ears.rip`)"
       - "traefik.http.routers.grafana-atl-ears-rip.entrypoints=web"
 
   atl-ears-rip:
@@ -52,8 +55,10 @@ services:
       - "8444:443"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.atl-ears-rip.rule=Host(`atl.ears.rip.local`,`atl.ears.rip`, `ears.rip`, `localhost`)" # Fix this for multiple cities
-      - "traefik.http.routers.atl-ears-rip.entrypoints=web"
+      - "traefik.http.routers.atl-ears-rip.rule=Host(`atl.ears.rip`, `ears.rip`)" # Fix this for multiple cities
+      - "traefik.http.routers.atl-ears-rip.entrypoints=websecure"
+      - "traefik.http.routers.atl-ears-rip.tls=true"
+      - "traefik.http.routers.atl-ears-rip.tls.certresolver=acmeresolver"
 
 volumes:
   grafana-data:
