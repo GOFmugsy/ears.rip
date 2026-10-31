@@ -2,7 +2,7 @@ version: "3"
 
 services:
   traefik:
-    image: "traefik:v2.10"
+    image: "traefik:v3.6"
     container_name: "traefik"
     command:
       #- "--log.level=DEBUG"
@@ -40,19 +40,22 @@ services:
       - grafana-data:/var/lib/grafana
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.grafana-atl-ears-rip.rule=Host(`grafana.atl.ears.rip.local`, `grafana.atl.ears.rip`, `grafana.ears.rip`)"
+      - "traefik.http.routers.grafana-atl-ears-rip.rule=Host(`grafana.atl.ears.rip.local`) || Host(`grafana.atl.ears.rip`) || Host(`grafana.ears.rip`)"
       - "traefik.http.routers.grafana-atl-ears-rip.entrypoints=web"
 
   atl-ears-rip:
     build:
-      dockerfile: Dockerfile.nginx
+      context: ../..
+      dockerfile: deploy/dev/Dockerfile.nginx
+      args:
+        COMMIT: ${COMMIT:-unknown}
     container_name: "atl-ears-rip"
     ports:
       - "8001:80"
       - "8444:443"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.atl-ears-rip.rule=Host(`atl.ears.rip.local`,`atl.ears.rip`, `ears.rip`, `localhost`)" # Fix this for multiple cities
+      - "traefik.http.routers.atl-ears-rip.rule=Host(`atl.ears.rip.local`) || Host(`atl.ears.rip`) || Host(`ears.rip`) || Host(`localhost`)" # Fix this for multiple cities
       - "traefik.http.routers.atl-ears-rip.entrypoints=web"
 
 volumes:

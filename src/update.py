@@ -1,22 +1,16 @@
 #!/usr/bin/python3
 
-import re
-import pkgutil
-import importlib
-import dominate
-from dominate.tags import *
 import datetime
-import icalendar
-import git
+import importlib
+import json
 import os
-import uuid
+import pkgutil
+from zoneinfo import ZoneInfo
 
 city = "atl"
-disclaimer = "There is absolutely no guarantee of any kind provided with this page or any derivative of this page"
-aboutStr = ["This website is intentionally simple.",
-						"It's purpose is to inform about shows in " + city + " in one location",
-						"The list refreshes most nights and is mostly informed by what the venues are posting on their websites"]
+timezone = ZoneInfo("America/New_York")
 daysInSched = 30
+dataFile = '../site/data/shows.json'
 
 import cities
 from cities.Venue import Venue
@@ -24,8 +18,6 @@ from cities.Gig import Gig
 importlib.import_module('cities.' + city)
 
 def main():
-	venues = []
-	
 	# import all modules in city package
 	for loader, name, ispkg in pkgutil.walk_packages(path=['./cities/' + city + '/']):
 		mod = importlib.import_module('.' + name, 'cities.' + city)
@@ -39,178 +31,48 @@ def main():
 		print(venue.name + ":")
 		print("\tgigs: " + str(len(venue.gigs)))
 
-	buildICSs(venues)
-	buildWebsite(venues)
+	writeData(venues)
 
-def buildICSs(venues):
-	icsdirdev = '../deploy/dev/web/events-ics/'
-	icsdirprod = '../deploy/prod/web/events-ics/'
-	# Clear old ICS files
-	oldICSdev = [ f for f in os.listdir(icsdirdev) if f.endswith(".ics") ]
-	for f in oldICSdev:
-		os.remove(os.path.join(icsdirdev, f))
-	oldICSprod = [ f for f in os.listdir(icsdirprod) if f.endswith(".ics") ]
-	for f in oldICSprod:
-		os.remove(os.path.join(icsdirprod, f))
+# Write every venue and upcoming gig to a JSON file that hugo builds the site from
+def writeData(venues):
+	now = datetime.datetime.now(timezone)
+	start = datetime.datetime.combine(now.date(), datetime.time())
+	end = start + datetime.timedelta(days = daysInSched)
 
-	# Build new ICS files
+	data = {
+		'city': city,
+		'generated': now.isoformat(),
+		'venues': [],
+		'shows': [],
+	}
+
 	for venue in venues:
+		geo = getattr(venue, 'geo', None)
+		data['venues'].append({
+			'name': venue.name,
+			'address': venue.address,
+			'url': venue.url,
+			'geo': [float(g) for g in geo] if geo else None,
+		})
+
 		for gig in venue.gigs:
-			cal = icalendar.Calendar()
-			e = icalendar.Event()
-			# tz = dateutil.tz.tzstr("America/New_York")
-			e.add('summary', gig.bands)
-			e["X-DT-DATEUTIL"] = icalendar.vDatetime(gig.doors)
-			e["dtstart"] = icalendar.vDatetime(gig.doors)
-			e["dtend"] = icalendar.vDatetime(gig.doors + datetime.timedelta(hours = 2))
-			e['location'] = icalendar.vText(venue.name + ' - ' + venue.address)
+			if not start <= gig.doors < end:
+				continue
+			data['shows'].append({
+				'id': gig.uid,
+				'bands': gig.bands.strip(),
+				'venue': venue.name,
+				'doors': gig.doors.replace(tzinfo = timezone).isoformat(),
+				'url': gig.url if gig.url.startswith('http') else None,
+				'cost': gig.cost,
+			})
 
-			cal.add_component(e)
+	data['shows'].sort(key = lambda s: s['doors'])
 
-			#f = open(icsdirdev + venue.name + '-' + gig.doors.strftime("%m%d%Y-%H:%M") + '.ics', 'wb')
-			f = open(icsdirdev + gig.uid + '.ics', 'wb')
-			f.write(cal.to_ical())
-			f.close()
-			#f = open(icsdirprod + venue.name + '-' + gig.doors.strftime("%m%d%Y-%H:%M") + '.ics', 'wb')
-			f = open(icsdirprod + gig.uid + '.ics', 'wb')
-			f.write(cal.to_ical())
-			f.close()
+	os.makedirs(os.path.dirname(dataFile), exist_ok = True)
+	with open(dataFile, 'w') as f:
+		json.dump(data, f, indent = 1)
+	print("wrote " + str(len(data['shows'])) + " shows to " + dataFile)
 
-def buildWebsite(venues):
-	web = dominate.document(title = city.upper() + ".EARS.RIP")
-	venueList = dominate.document(title = city.upper() + ".EARS.RIP")
-	about = dominate.document(title = city.upper() + ".EARS.RIP")
-
-	date = datetime.datetime.now()
-	now = datetime.datetime.now()
-	repo = git.Repo(search_parent_directories=True)
-	sha = repo.head.object.hexsha
-
-	with web.head:
-		link(rel='stylesheet', type='text/css', href='/css/style.css')
-		link(rel='icon', type='image/x-icon', href='/favicon.ico')
-
-	with venueList.head:
-		link(rel='stylesheet', type='text/css', href='/css/style.css')
-		link(rel='icon', type='image/x-icon', href='/favicon.ico')
-
-	with about.head:
-		link(rel='stylesheet', type='text/css', href='/css/style.css')
-		link(rel='icon', type='image/x-icon', href='/favicon.ico')
-
-	with web:
-
-		with div():
-			attr(cls='title')
-			h1(city.upper() + '.EARS.RIP')
-
-		with div():
-			attr(cls='nav')
-			str(a('shows', href='index.html')) + ' || ' + str(a('venues', href='venues.html')) + ' || ' + str(a('about', href='about.html'))
-
-		with div():
-			attr(cls='schedule')
-			with table().add(tbody()):
-				for day in range(daysInSched):
-					gigsToday = 0
-					for venue in venues:
-						curGigs = venue.getGigsByDate(date)
-						if curGigs and len(curGigs) > 0:
-							gigsToday += len(curGigs)
-					gigCount = 0
-					with tr():
-						if gigsToday > 0:
-							with td():
-								attr(cls='date')
-								with div():
-									str(p(date.strftime("%a").upper()))
-									str(p(date.strftime("%B %d")))
-						with td():
-							for venue in venues:
-								for gig in venue.getGigs():
-									if gig.doors.date() == date.date():
-										with div():
-											attr(cls='gig')
-											with div():
-												attr(cls='bands')
-												h4(a(gig.bands, href=gig.url))
-												with div():
-													attr(cls='info')
-													str(a(venue.name, href=venue.url)) + str(p(' || ')) + str(a('ics', href='events-ics/' + gig.uid + '.ics')) + str(p(' || ' + gig.cost + ' || ' + str(gig.doors.strftime("%-I:%M%p"))))
-
-					date += datetime.timedelta(days=1)
-
-		with div():
-			attr(cls='footer')
-			str(p(disclaimer))
-			str(p(now.strftime("%A, %d. %B %Y %-I:%M%p")))
-			str(p(sha))
-
-	with venueList:
-		attr(cls='body')
-
-		with div():
-			attr(cls='title')
-			h1(city.upper() + '.EARS.RIP')
-
-		with div():
-			attr(cls='nav')
-			str(a('shows', href='index.html')) + ' || ' + str(a('venues', href='venues.html')) + ' || ' + str(a('about', href='about.html'))
-
-		with div():
-			attr(cls='schedule')
-			with div():
-				attr(cls='venueList')
-				for venue in venues:
-					p(a(venue.name, href=venue.url))
-
-		with div():
-			attr(cls='footer')
-			str(p(disclaimer))
-			str(p(now.strftime("%A, %d. %B %Y %-I:%M%p")))
-			str(p(sha))
-
-	with about:
-		attr(cls='body')
-
-		with div():
-			attr(cls='title')
-			h1(city.upper() + '.EARS.RIP')
-
-		with div():
-			attr(cls='nav')
-			str(a('shows', href='index.html')) + ' || ' + str(a('venues', href='venues.html')) + ' || ' + str(a('about', href='about.html'))
-			
-		with div():
-			attr(cls='schedule')
-			with div().add(ul()):
-				attr(cls='venueList')
-				for i in aboutStr:
-					li(i)
-
-		with div():
-			attr(cls='footer')
-			str(p(disclaimer))
-			str(p(now.strftime("%A, %d. %B %Y %-I:%M%p")))
-			str(p(sha))
-
-	with open('../deploy/dev/web/index.html', 'w') as index:
-		index.write(str(web))
-
-	with open('../deploy/dev/web/venues.html', 'w') as venuePage:
-		venuePage.write(str(venueList))
-
-	with open('../deploy/dev/web/about.html', 'w') as aboutPage:
-		aboutPage.write(str(about))
-
-	with open('../deploy/prod/web/index.html', 'w') as index:
-		index.write(str(web))
-
-	with open('../deploy/prod/web/venues.html', 'w') as venuePage:
-		venuePage.write(str(venueList))
-	
-	with open('../deploy/prod/web/about.html', 'w') as aboutPage:
-		aboutPage.write(str(about))
-	
 if __name__ == "__main__":
 	main()

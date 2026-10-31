@@ -1,8 +1,3 @@
 beautifulsoup4
-dominate
 requests
 lxml
-gitpython
-icalendar
-hugo
-

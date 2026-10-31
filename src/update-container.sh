@@ -1,4 +1,4 @@
 #!/bin/bash
-/usr/bin/docker build -t ears-rip-update .
-/usr/bin/docker run -v /etc/localtime:/etc/localtime:ro -v ./cache:/usr/src/app/cache -v ./../tmp:/usr/src/tmp -v ./../../../.gitconfig:/etc/gitconfig -v ./../.git:/usr/src/.git -v ./../deploy:/usr/src/deploy -v ./events-ics:/usr/src/app/events-ics -t --rm --name ears-rip-updating ears-rip-update
-
+# Scrape every venue and write ../site/data/shows.json, then run deploy/*/rebuild-local.sh to publish
+docker build -t ears-rip-update .
+docker run -v /etc/localtime:/etc/localtime:ro -v ./../tmp:/usr/src/tmp -v ./../site:/usr/src/site -t --rm --name ears-rip-updating ears-rip-update
