@@ -1,0 +1,50 @@
+# Overridden per environment at build time with --baseURL (see deploy/*/Dockerfile.nginx)
+baseURL = "https://atl.ears.rip/"
+title = "atl.ears.rip"
+theme = "risotto"
+locale = "en-US"
+timeZone = "America/New_York"
+copyright = "There is absolutely no guarantee of any kind provided with this page or any derivative of this page"
+disableKinds = ["rss"]
+# Every show is in the future; without this hugo skips them all
+buildFuture = true
+
+[params]
+city = "atl"
+timezone = "America/New_York"
+# Set from the environment at build time (HUGO_PARAMS_COMMIT)
+commit = "unknown"
+
+[params.theme]
+palette = "base16-dark"
+
+[params.about]
+title = "atl.ears.rip"
+description = "Every live show in Atlanta, in one place."
+logo = "🎧"
+
+[taxonomies]
+venue = "venues"
+date = "dates"
+
+[outputs]
+home = ["html", "calendar"]
+term = ["html", "calendar"]
+
+[menu]
+  [[menu.main]]
+    name = "shows"
+    url = "/"
+    weight = 10
+  [[menu.main]]
+    name = "venues"
+    url = "/venues/"
+    weight = 20
+  [[menu.main]]
+    name = "dates"
+    url = "/dates/"
+    weight = 30
+  [[menu.main]]
+    name = "about"
+    url = "/about/"
+    weight = 40

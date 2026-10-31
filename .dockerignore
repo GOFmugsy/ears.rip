@@ -1,0 +1,8 @@
+.git
+tmp
+src
+deploy/*/web/*.html
+deploy/*/web/events-ics
+site/public
+site/resources
+site/.hugo_build.lock
