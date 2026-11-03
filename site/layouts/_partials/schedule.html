@@ -1,0 +1,14 @@
+{{/* Shows grouped by day, soonest first. Takes a page collection. */}}
+{{ range .GroupByDate "2006-01-02" "asc" }}
+  {{ $day := time.AsTime .Key }}
+  <section class="day">
+    <h2 class="day__date"><a href="{{ printf "/dates/%s/" .Key | relURL }}">{{ $day.Format "Mon January 2" | upper }}</a></h2>
+    <ul class="day__shows">
+      {{ range .Pages.ByDate }}
+        {{ partial "show.html" . }}
+      {{ end }}
+    </ul>
+  </section>
+{{ else }}
+  <p>No shows found.</p>
+{{ end }}

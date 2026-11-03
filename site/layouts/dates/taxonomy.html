@@ -1,0 +1,8 @@
+{{ define "main" }}
+  <h1>dates</h1>
+  <ul>
+    {{ range sort .Pages "Title" }}
+      <li><a href="{{ .RelPermalink }}">{{ (time.AsTime .Title).Format "Mon January 2" }}</a> ({{ len .Pages }} shows)</li>
+    {{ end }}
+  </ul>
+{{ end }}

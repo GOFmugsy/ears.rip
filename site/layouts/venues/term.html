@@ -1,0 +1,12 @@
+{{ define "main" }}
+  <h1>{{ .Title }}</h1>
+  {{ partial "schedule.html" .Pages }}
+{{ end }}
+
+{{ define "aside" }}
+  {{ $venue := partial "venue.html" .Title }}
+  {{ with $venue.address }}<p>{{ . }}</p>{{ end }}
+  {{ with $venue.geo }}<p><a href="https://www.openstreetmap.org/?mlat={{ index . 0 }}&mlon={{ index . 1 }}#map=17/{{ index . 0 }}/{{ index . 1 }}">map</a></p>{{ end }}
+  {{ with $venue.url }}<p><a href="{{ . }}">venue website</a></p>{{ end }}
+  {{ with .OutputFormats.Get "calendar" }}<p><a href="{{ .Permalink }}">Subscribe to this venue (ics)</a></p>{{ end }}
+{{ end }}

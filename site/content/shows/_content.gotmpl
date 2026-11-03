@@ -1,0 +1,19 @@
+{{/* Turn each scraped show in data/shows.json into a page. update.py writes that file. */}}
+{{ with hugo.Data.shows }}
+  {{ range .shows }}
+    {{ $doors := time.AsTime .doors }}
+    {{ $.AddPage (dict
+      "path" .id
+      "title" .bands
+      "dates" (dict "date" $doors)
+      "params" (dict
+        "venues" (slice .venue)
+        "dates" (slice ($doors.Format "2006-01-02"))
+        "venue" .venue
+        "cost" .cost
+        "tickets" .url
+        "uid" .id
+      )
+    ) }}
+  {{ end }}
+{{ end }}

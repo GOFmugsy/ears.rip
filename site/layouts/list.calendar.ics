@@ -1,0 +1,1 @@
+{{- partial "ics/calendar.ics" (dict "name" (printf "%s - %s" site.Title .Title) "pages" .Pages) -}}

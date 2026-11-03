@@ -1,0 +1,36 @@
+/* ears.rip additions to the risotto theme */
+
+.day {
+  margin-bottom: 2rem;
+}
+
+.day__date {
+  border-bottom: 1px solid var(--off-fg);
+}
+
+.day__date a {
+  text-decoration: none;
+}
+
+.day__shows {
+  list-style: none;
+  padding-left: 0;
+}
+
+.show {
+  margin-bottom: 1rem;
+}
+
+.show__bands {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.show__info {
+  margin: 0;
+  color: var(--off-fg);
+}
+
+.venue-list li {
+  margin-bottom: 0.5rem;
+}

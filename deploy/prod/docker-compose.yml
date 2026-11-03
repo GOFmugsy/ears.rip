@@ -15,12 +15,15 @@ services:
       - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
       - "--entrypoints.websecure.address=:443"
       - "--certificatesResolvers.acmeresolver.acme.httpChallenge.entryPoint=web"
+      # keep issued certs across container restarts so they aren't re-requested from Let's Encrypt every deploy
+      - "--certificatesResolvers.acmeresolver.acme.storage=/letsencrypt/acme.json"
     ports:
       - "80:80"
       - "443:443"
       - "8080:8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "traefik-acme:/letsencrypt"
 
   nginx-exporter:
     image: "nginx/nginx-prometheus-exporter:latest"
@@ -71,3 +74,4 @@ services:
 volumes:
   grafana-data:
     external: true
+  traefik-acme:

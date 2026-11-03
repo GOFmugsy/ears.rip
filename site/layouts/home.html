@@ -1,0 +1,10 @@
+{{ define "main" }}
+  {{ .Content }}
+  {{ partial "schedule.html" (where site.RegularPages "Section" "shows") }}
+{{ end }}
+
+{{ define "aside" }}
+  {{ with .OutputFormats.Get "calendar" }}
+    <p><a href="{{ .Permalink }}">Subscribe to every show (ics)</a></p>
+  {{ end }}
+{{ end }}

@@ -1,0 +1,7 @@
+{{/* Escape a string for use as an iCalendar TEXT value (RFC 5545 3.3.11). */}}
+{{ $s := string . }}
+{{ $s = replace $s `\` `\\` }}
+{{ $s = replace $s ";" `\;` }}
+{{ $s = replace $s "," `\,` }}
+{{ $s = replaceRE `\r?\n` `\n` $s }}
+{{ return $s }}

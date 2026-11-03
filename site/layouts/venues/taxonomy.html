@@ -1,0 +1,12 @@
+{{ define "main" }}
+  <h1>venues</h1>
+  <ul class="venue-list">
+    {{ range .Pages.ByTitle }}
+      {{ $venue := partial "venue.html" .Title }}
+      <li>
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a> ({{ len .Pages }} shows)
+        {{ with $venue.address }}<br><small>{{ . }}</small>{{ end }}
+      </li>
+    {{ end }}
+  </ul>
+{{ end }}

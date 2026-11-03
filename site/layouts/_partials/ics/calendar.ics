@@ -1,0 +1,25 @@
+{{- /*
+  Build a VCALENDAR from a page collection. Lines are folded at 70 characters
+  and terminated with CRLF, as RFC 5545 requires.
+  Takes dict: name (calendar name), pages.
+*/ -}}
+{{- $lines := slice "BEGIN:VCALENDAR" "VERSION:2.0" (printf "PRODID:-//ears.rip//%s//EN" site.Params.city) "CALSCALE:GREGORIAN" (printf "X-WR-CALNAME:%s" (partial "ics/escape.ics" .name)) (printf "X-WR-TIMEZONE:%s" site.Params.timezone) -}}
+{{- range sort .pages "Date" -}}
+  {{- range split (partial "ics/event.ics" .) "\n" -}}
+    {{- with trim . " \r" }}{{ $lines = $lines | append . }}{{ end -}}
+  {{- end -}}
+{{- end -}}
+{{- $lines = $lines | append "END:VCALENDAR" -}}
+{{- $width := 70 -}}
+{{- $out := slice -}}
+{{- range $lines -}}
+  {{- $n := strings.RuneCount . -}}
+  {{- $out = $out | append (substr . 0 $width) -}}
+  {{- if gt $n $width -}}
+    {{- $line := . -}}
+    {{- range seq $width $width (sub $n 1) -}}
+      {{- $out = $out | append (printf " %s" (substr $line . $width)) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return printf "%s\r\n" (delimit $out "\r\n") -}}

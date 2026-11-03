@@ -1,0 +1,4 @@
+<p class="copyright">{{ site.Copyright }}</p>
+{{ with hugo.Data.shows }}<p>shows updated {{ (time.AsTime .generated).Format "Monday, January 2 2006 3:04PM" }}</p>{{ end }}
+<p>build {{ site.Params.commit }}</p>
+<p class="advertisement">Powered by <a href="https://gohugo.io/">hugo</a> and <a href="https://github.com/joeroe/risotto">risotto</a>.</p>

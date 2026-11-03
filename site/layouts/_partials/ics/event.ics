@@ -1,0 +1,17 @@
+{{- $venue := partial "venue.html" .Params.venue -}}
+{{- $location := .Params.venue -}}
+{{- with $venue.address }}{{ $location = printf "%s - %s" $location . }}{{ end -}}
+{{- $stamp := "20060102T150405Z" -}}
+BEGIN:VEVENT
+UID:{{ .Params.uid }}@{{ site.Params.city }}.ears.rip
+DTSTAMP:{{ now.UTC.Format $stamp }}
+DTSTART:{{ .Date.UTC.Format $stamp }}
+DTEND:{{ (.Date.Add (time.ParseDuration "2h")).UTC.Format $stamp }}
+SUMMARY:{{ partial "ics/escape.ics" .Title }}
+LOCATION:{{ partial "ics/escape.ics" $location }}
+DESCRIPTION:{{ partial "ics/escape.ics" (printf "Doors %s. %s" (.Date.Format "3:04PM") .Params.cost) }}
+{{- with $venue.geo }}
+GEO:{{ index . 0 }};{{ index . 1 }}
+{{- end }}
+URL:{{ .Params.tickets | default .Permalink }}
+END:VEVENT

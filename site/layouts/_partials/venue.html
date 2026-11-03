@@ -1,0 +1,8 @@
+{{/* Look up a venue's details (address, url, geo) from data/shows.json by name. */}}
+{{ $venue := dict "name" . }}
+{{ with hugo.Data.shows }}
+  {{ with where .venues "name" $ }}
+    {{ $venue = index . 0 }}
+  {{ end }}
+{{ end }}
+{{ return $venue }}
