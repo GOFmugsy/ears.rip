@@ -48,7 +48,7 @@ src/update.py ──> site/data/shows.json ──> Hugo (site/) ──> nginx im
 - `content/shows/_content.gotmpl` is a Hugo content adapter that creates one page per show from `hugo.Data.shows`. Taxonomies `venues` and `dates` (configured in `hugo.toml`) produce the per-venue and per-day pages.
 - `buildFuture = true` is required: every show is dated in the future, so Hugo would otherwise silently drop them all.
 - Venue details (address, url, geo) are not on show pages. Templates look them up by venue name via `_partials/venue.html`.
-- Templates build venue links as `/venues/<urlize name>/`, which must match Hugo's taxonomy term URLs.
+- Link to a show's venue with `range .GetTerms "venues"` → `.RelPermalink`. Don't build `/venues/<urlize name>/` by hand: Hugo's term slugs differ for names with punctuation (`Boggs Social & Supply` → `boggs-social--supply`).
 - Calendar (`.ics`) output uses Hugo's built-in `calendar` output format for home, terms, and show pages. `_partials/ics/calendar.ics` builds the file and handles RFC 5545 escaping, 70-char line folding, and CRLF line endings. Times are emitted in UTC.
 - Project layouts use Hugo's 0.146+ template system (`layouts/_partials/`, `home.html`, `<section>/page.html`, `<taxonomy>/term.html`). The theme still uses the old `_default/` structure, and project files override it. Use `hugo.Data`, not the deprecated `site.Data`. Theme CSS overrides go in `site/assets/css/custom.css`.
 - The footer's build commit comes from the `HUGO_PARAMS_COMMIT` env var.

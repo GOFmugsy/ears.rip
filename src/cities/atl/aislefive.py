@@ -23,7 +23,6 @@ class AisleFive(Venue):
 			bands = ''
 			doors = ''
 			url = ''
-			cost = ''
 
 			# Get band list
 			bandH = gigH.find_all('div', re.compile('event-info-block'))
@@ -53,14 +52,6 @@ class AisleFive(Venue):
 
 			dt = datetime.datetime(2025, mxref[month.upper()], int(day), hour=int(hour), minute=int(minute))
 
-			# Get Cost(s)
-			costH = gigH.find_all('span', 'price')
-			cost = 'NOT FOUND'
-			try:
-				cost = re.search(r"(\$[0-9]+)", str(costH[0])).group(0)
-			except:
-				print('can not find cost for gig at ' + self.name + ' on ' + str(dt))
-
 			# Get Link
 			linkH = gigH.find('p', 'event-title')
 			link = 'NO LINK'
@@ -69,7 +60,7 @@ class AisleFive(Venue):
 			except:
 				print('can not find link for gig at ' + self.name + ' on ' + str(dt))
 
-			gig = Gig(bands, dt, link, cost)
+			gig = Gig(bands, dt, link)
 			gigs.append(gig)
 
 		return gigs

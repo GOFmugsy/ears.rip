@@ -31,7 +31,6 @@ class Terminalwest(Venue):
 			bands = ''
 			doors = ''
 			url = ''
-			cost = ''
 
 			# Build band list
 			bands = gigJ['title']['headlinersText']
@@ -51,18 +50,11 @@ class Terminalwest(Venue):
 				print("Time not fine for show at: " + self.name)
 				continue
 
-			# Get costs(s)
-			cost = "NOT FOUND"
-			if gigJ['ticketPrice'] != None:
-				cost = gigJ['ticketPrice']
-			if gigJ['doorPrice'] != None:
-				cost += " - " + gigJ['doorPrice']
-
 			# Get link
 			link = "https://terminalwestatl.com/events/detail/?event_id=" + gigJ['eventId']
 
 			# instantiate gig
-			gig = Gig(bands, dt, link, cost)
+			gig = Gig(bands, dt, link)
 				
 			gigs.append(gig)
 

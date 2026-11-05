@@ -40,30 +40,12 @@ class Eastern(Venue):
 				print("Time not found for show at " + self.name)
 				continue
 
-			# Get cost(s). This feed leaves ticketPrice/doorPrice empty and puts "$0"
-			# placeholders in the Low/High fields, so only trust non-zero amounts.
-			cost = "NOT FOUND"
-			adv = self.priceRange(gigJ.get('ticketPriceLow'), gigJ.get('ticketPriceHigh'))
-			dos = self.priceRange(gigJ.get('doorPriceLow'), gigJ.get('doorPriceHigh'))
-			if adv:
-				cost = adv
-			if dos:
-				cost = dos if cost == "NOT FOUND" else cost + " - " + dos
-
 			# Get link
 			link = "https://www.easternatl.com/events/detail/?event_id=" + gigJ['eventId']
 
 			# instantiate gig
-			gig = Gig(bands, dt, link, cost)
+			gig = Gig(bands, dt, link)
 
 			gigs.append(gig)
 
 		return gigs
-
-	# "$20", "$20-$25", or None if there's no real price
-	def priceRange(self, low, high):
-		prices = []
-		for p in (low, high):
-			if p and re.search(r"[1-9]", p) and p not in prices:
-				prices.append(p)
-		return "-".join(prices) or None

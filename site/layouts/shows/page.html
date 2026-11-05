@@ -6,8 +6,7 @@
   <div class="content__body">
     <ul>
       <li><a href="{{ .Date.Format "2006-01-02" | printf "/dates/%s/" | relURL }}">{{ .Date.Format "Monday, January 2" }}</a>, doors {{ .Date.Format "3:04PM" }}</li>
-      <li><a href="{{ printf "/venues/%s/" (urlize .Params.venue) | relURL }}">{{ .Params.venue }}</a>{{ with $venue.address }}, {{ . }}{{ end }}</li>
-      <li>{{ .Params.cost }}</li>
+      <li>{{ range .GetTerms "venues" }}<a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>{{ end }}{{ with $venue.address }}, {{ . }}{{ end }}</li>
     </ul>
     <p>
       {{ with .Params.tickets }}<a href="{{ . }}">tickets &amp; info</a>{{ end }}

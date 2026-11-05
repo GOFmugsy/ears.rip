@@ -64,7 +64,6 @@ def writeData(venues):
 				'venue': venue.name,
 				'doors': gig.doors.replace(tzinfo = timezone).isoformat(),
 				'url': gig.url if gig.url.startswith('http') else None,
-				'cost': gig.cost,
 			})
 
 	data['shows'].sort(key = lambda s: s['doors'])

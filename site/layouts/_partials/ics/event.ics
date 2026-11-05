@@ -9,7 +9,7 @@ DTSTART:{{ .Date.UTC.Format $stamp }}
 DTEND:{{ (.Date.Add (time.ParseDuration "2h")).UTC.Format $stamp }}
 SUMMARY:{{ partial "ics/escape.ics" .Title }}
 LOCATION:{{ partial "ics/escape.ics" $location }}
-DESCRIPTION:{{ partial "ics/escape.ics" (printf "Doors %s. %s" (.Date.Format "3:04PM") .Params.cost) }}
+DESCRIPTION:{{ partial "ics/escape.ics" (printf "Doors %s" (.Date.Format "3:04PM")) }}
 {{- with $venue.geo }}
 GEO:{{ index . 0 }};{{ index . 1 }}
 {{- end }}

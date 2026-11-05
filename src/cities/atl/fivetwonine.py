@@ -24,7 +24,6 @@ class Fivetwonine(Venue):
 			bands = ''
 			doors = ''
 			url = ''
-			cost = ''
 
 			# Get band list
 			headlinersH = gigH.find_all('h3', 'headliner')
@@ -60,15 +59,6 @@ class Fivetwonine(Venue):
 			dsplit = date.split(' ')
 			dt = datetime.datetime(int(dsplit[2]), int(mxref[dsplit[0].upper()]), int(dsplit[1][0:2]), hour=int(hour))
 
-			# get Cost(s)
-			costH = gigH.find_all('div', 'event-meta')
-			cost = 'NOT FOUND'
-			try:
-				# pretty damn loose
-				cost = re.search(r"(\$.*)|FREE", str(costH[0].get_text())).group(0)
-			except:
-				print('can not find cost for gig at ' + self.name + ' on ' + date)
-
 			# get Link
 			linkH = gigH.find('a', 'fl-button', string=re.compile('.*Info.*'))
 			link = 'NO LINK'
@@ -78,7 +68,7 @@ class Fivetwonine(Venue):
 				print('can not find link for gig at ' + self.name + ' on ' + date)
 				
 			# instantiate gig
-			gig = Gig(bands, dt, link, cost)
+			gig = Gig(bands, dt, link)
 			gigs.append(gig)
 
 		return gigs

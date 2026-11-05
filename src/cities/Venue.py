@@ -106,13 +106,6 @@ class Venue(ABC):
 			doors.append(gig.doors)
 		return doors
 
-	# Should return chronological cost for each show
-	def getCost(self):
-		costs = []
-		for gig in self.gigs:
-			costs.append(gig.cost)
-		return costs
-
 	# Should return a chronological list of ALL bands in the gig
 	def getBands(self):
 		bands = []

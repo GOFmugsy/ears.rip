@@ -23,7 +23,6 @@ class StarBar(Venue):
 			bands = ''
 			doors = ''
 			url = ''
-			cost = ''
 
 			# Get band list
 			bandH = gigH.find('a', 'eventlist-title-link')
@@ -57,16 +56,6 @@ class StarBar(Venue):
 
 			dt = datetime.datetime(2024, mxref[month.upper()], int(day), hour=int(hour), minute=int(minute))
 
-			# Get Cost(s)
-			costH = gigH.find_all('p', {'style': 'white-space:pre-wrap;'})
-			cost = 'NOT FOUND'
-			try:
-				for i in costH:
-					if re.search('\$[0-9]+', i.get_text()):
-						cost = re.search(r"(\$[0-9]+)", i.get_text()).group(0)
-			except:
-				print('can not find cost for gig at ' + self.name + ' on ' + str(dt))
-
 			# Get Link
 			linkH = gigH.find('a', 'eventlist-title-link')
 			link = 'NO LINK'
@@ -75,7 +64,7 @@ class StarBar(Venue):
 			except:
 				print('can not find link for gig at ' + self.name + ' on ' + str(dt))
 
-			gig = Gig(bands, dt, link, cost)
+			gig = Gig(bands, dt, link)
 			gigs.append(gig)
 
 		return gigs

@@ -1,9 +1,8 @@
 <li class="show">
   <h3 class="show__bands"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
   <p class="show__info">
-    <a href="{{ printf "/venues/%s/" (urlize .Params.venue) | relURL }}">{{ .Params.venue }}</a>
+    {{ range .GetTerms "venues" }}<a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>{{ end }}
     || {{ .Date.Format "3:04PM" }}
-    || {{ .Params.cost }}
     {{ with .Params.tickets }}|| <a href="{{ . }}">tickets</a>{{ end }}
     {{ with .OutputFormats.Get "calendar" }}|| <a href="{{ .RelPermalink }}">ics</a>{{ end }}
   </p>

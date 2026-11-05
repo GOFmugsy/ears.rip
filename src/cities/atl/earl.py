@@ -23,7 +23,6 @@ class Earl(Venue):
 			bands = ''
 			doors = ''
 			url = ''
-			cost = ''
 
 			# Get band list
 			bandH = gigH.find_all('div', re.compile('show-listing-headliner|show-listing-support'))
@@ -53,14 +52,6 @@ class Earl(Venue):
 
 			dt = datetime.datetime(int(dsplit[3]), int(mxref[dsplit[1][0:3].upper()]), int(re.search('[0-9]+', dsplit[2]).group()), hour=hour, minute=minute)
 
-			# Get Cost(s)
-			costH = gigH.find_all('p', 'show-listing-price')
-			cost = 'NOT FOUND'
-			try:
-				cost = re.search(r"(\$[0-9]+)", str(costH[0])).group(0)
-			except:
-				print('can not find cost for gig at ' + self.name + ' on ' + str(dt))
-
 			# Get Link
 			linkH = gigH.find_all('a', string="More Info")
 			link = 'NO LINK'
@@ -69,7 +60,7 @@ class Earl(Venue):
 			except:
 				print('can not find link for gig at ' + self.name + ' on ' + str(dt))
 
-			gig = Gig(bands, dt, link, cost)
+			gig = Gig(bands, dt, link)
 			gigs.append(gig)
 
 		return gigs

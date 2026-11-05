@@ -27,7 +27,6 @@ class Masquerade(Venue):
 			bands = ''
 			doors = ''
 			url = ''
-			cost = ''
 
 			# Get list of bands
 			headlinerH = gigH.find('h2', 'js-listTitle')
@@ -57,17 +56,6 @@ class Masquerade(Venue):
 
 			dt = datetime.datetime(year, month, day, hour=hour, minute=minute)
 
-			# get Cost(s)
-			costComp = gigH.find('div', 'time-show').get_text()
-			costs = re.findall(r"\$[0-9]+|FREE", costComp)
-			cost = ''
-			if len(costs) > 1:
-				cost = costs[0] + ' - ' + costs[-1]
-			elif len(costs) == 0:
-				cost = "?"
-			else:
-				cost = costs[0]
-
 			# Check stage in whitelist
 			# Skip iteration if location isn't in stageList
 			locationH = gigH.find('span', 'js-listVenue').get_text()
@@ -79,7 +67,7 @@ class Masquerade(Venue):
 			url = linkH['href']
 
 			# instantiate gig
-			gig = Gig(bands, dt, url, cost)
+			gig = Gig(bands, dt, url)
 			gigs.append(gig)
 
 		return gigs
