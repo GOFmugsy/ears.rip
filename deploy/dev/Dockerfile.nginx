@@ -4,8 +4,10 @@ FROM ghcr.io/gohugoio/hugo:v0.169.0 AS build
 # root-relative links so the site works under every dev hostname
 ARG BASE_URL=/
 ARG COMMIT=unknown
+# which city to build, its three letter code (site/config/<city>/hugo.toml)
+ARG CITY=atl
 COPY --chown=hugo:hugo site/ /project/
-RUN HUGO_PARAMS_COMMIT=${COMMIT} hugo --minify --baseURL ${BASE_URL} --destination /tmp/public
+RUN HUGO_PARAMS_COMMIT=${COMMIT} hugo --minify --environment ${CITY} --baseURL ${BASE_URL} --destination /tmp/public
 
 FROM nginx
 COPY deploy/dev/web/nginx.conf /etc/nginx/nginx.conf

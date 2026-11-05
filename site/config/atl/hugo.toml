@@ -1,0 +1,19 @@
+# Atlanta. Build with: hugo --environment atl
+# baseURL is overridden at build time with --baseURL (see deploy/*/Dockerfile.nginx)
+baseURL = "https://atl.ears.rip/"
+title = "atl.ears.rip"
+timeZone = "America/New_York"
+
+[params]
+city = "atl"
+cityName = "Atlanta"
+timezone = "America/New_York"
+
+[params.about]
+title = "atl.ears.rip"
+description = "Every live show in Atlanta, in one place."
+
+# build from this city's scraped shows (src/update.py writes data/atl/shows.json)
+[[module.mounts]]
+source = "data/atl"
+target = "data"

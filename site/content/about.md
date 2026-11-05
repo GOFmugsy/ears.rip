@@ -4,7 +4,7 @@ title: about
 
 This website is intentionally simple.
 
-Its purpose is to inform about shows in Atlanta in one location.
+Its purpose is to inform about shows in {{< param "cityName" >}} in one location.
 
 The list refreshes most nights and is mostly informed by what the venues are posting on their websites.
 

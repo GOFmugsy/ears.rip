@@ -33,6 +33,12 @@ services:
       - -nginx.scrape-uri
       - http://atl-ears-rip/metrics
 
+  nginx-exporter-avl:
+    image: "nginx/nginx-prometheus-exporter:latest"
+    command:
+      - -nginx.scrape-uri
+      - http://avl-ears-rip/metrics
+
   prometheus:
     build:
       dockerfile: Dockerfile.prometheus
@@ -59,6 +65,7 @@ services:
       context: ../..
       dockerfile: deploy/prod/Dockerfile.nginx
       args:
+        CITY: atl
         COMMIT: ${COMMIT:-unknown}
     container_name: "atl-ears-rip"
     ports:
@@ -70,6 +77,21 @@ services:
       - "traefik.http.routers.atl-ears-rip.entrypoints=websecure"
       - "traefik.http.routers.atl-ears-rip.tls=true"
       - "traefik.http.routers.atl-ears-rip.tls.certresolver=acmeresolver"
+
+  avl-ears-rip:
+    build:
+      context: ../..
+      dockerfile: deploy/prod/Dockerfile.nginx
+      args:
+        CITY: avl
+        COMMIT: ${COMMIT:-unknown}
+    container_name: "avl-ears-rip"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.avl-ears-rip.rule=Host(`avl.ears.rip`)"
+      - "traefik.http.routers.avl-ears-rip.entrypoints=websecure"
+      - "traefik.http.routers.avl-ears-rip.tls=true"
+      - "traefik.http.routers.avl-ears-rip.tls.certresolver=acmeresolver"
 
 volumes:
   grafana-data:

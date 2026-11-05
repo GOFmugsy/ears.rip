@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-ears.rip lists every live music show in a city on one static site (currently only Atlanta: atl.ears.rip). Python scrapers pull each venue's schedule, Hugo renders the site with the [risotto](https://github.com/joeroe/risotto) theme, and the result is served by nginx behind Traefik. The intent is one deployment per city.
+ears.rip lists every live music show in a city on one static site per city. Python scrapers pull each venue's schedule, Hugo renders the site with the [risotto](https://github.com/joeroe/risotto) theme, and the result is served by nginx behind Traefik. Each city has a three letter code (`atl` Atlanta, `avl` Asheville), its own `<code>.ears.rip` site, and its own nginx container.
 
 ## Commands
 
@@ -13,16 +13,17 @@ There are no tests or linters. Verify changes by scraping, building, and looking
 ```sh
 git submodule update --init                # fetch the risotto theme (site/themes/risotto) on a fresh clone
 
-# Scrape venues -> site/data/shows.json. Must run from src/ (paths are relative), and ../tmp must exist.
-cd src && python3 update.py                # deps: pip install -r requirements.txt
+# Scrape venues -> site/data/<city>/shows.json. Must run from src/ (paths are relative), and ../tmp must exist.
+cd src && python3 update.py                # every city; deps: pip install -r requirements.txt
+cd src && python3 update.py avl            # just one city
 cd src && ./update-container.sh            # same, in a container (update-podman.sh for podman)
 
 # Try one venue scraper
 cd src && python3 -c "from cities.atl.earl import Earl; v = Earl(); print(len(v.gigs)); print(v.gigs[0])"
 
-# Site
-cd site && hugo server                     # local preview
-cd site && hugo --minify -d /tmp/public    # full build; check the page count is in the hundreds, not ~8
+# Site. Every hugo command needs --environment <city>; without it the site builds with no shows.
+cd site && hugo server --environment atl                     # local preview
+cd site && hugo --environment atl --minify -d /tmp/public    # full build; check the page count isn't ~8
 
 # Hosting stack (traefik, nginx site, prometheus, grafana)
 ./start.sh          # prod
@@ -32,19 +33,24 @@ cd site && hugo --minify -d /tmp/public    # full build; check the page count is
 ## Architecture
 
 ```
-src/update.py ──> site/data/shows.json ──> Hugo (site/) ──> nginx image (deploy/<env>/Dockerfile.nginx) ──> Traefik
+src/update.py ──> site/data/<city>/shows.json ──> Hugo --environment <city> ──> <city>-ears-rip nginx image ──> Traefik (<city>.ears.rip)
 ```
 
 ### Scraping (`src/`)
+- Each city is a package `src/cities/<code>/` whose `__init__.py` sets `timezone`. `update.py` treats every package in `cities/` as a city.
 - Each venue is a `Venue` subclass in `src/cities/<city>/`. Its `__init__` sets `name`, `geo`, `address`, `url`, `schedule`, then does `self.soup = self.getPage()` and `self.gigs = self.fetchGigs()`. Scraping happens in the constructor.
-- `update.py` discovers venues with `Venue.__subclasses__()` after importing the city package. A venue only runs if it is imported in `cities/<city>/__init__.py`. Disabled or retired scrapers live in `src/parse-stash/`.
+- `update.py` imports every module in the city's folder (`pkgutil.walk_packages`) and runs that city's `Venue.__subclasses__()`, filtered by module path so cities don't mix. Any `.py` file in the folder runs whether or not `__init__.py` imports it, which is why disabled or retired scrapers are moved to `src/parse-stash/`.
+- Venues that list shows at other venues filter them out (Masquerade by stage, The Orange Peel keeps itself and Pulp but skips Hellbender).
+- Some venue sites omit the year from dates. Infer it (see `OrangePeel.inferDate`, which matches the weekday); don't hardcode a year.
 - `Venue.getPage()` / `getJSON()` cache responses in `../tmp/<venue name>.html|.json` for 23 hours. Delete the cache file to force a refetch while working on a scraper.
-- Scrapers produce naive local `datetime`s for `Gig.doors`. `update.py` attaches America/New_York, keeps only the next 30 days (`daysInSched`), and writes `shows.json`.
+- Scrapers produce naive local `datetime`s for `Gig.doors`. `update.py` attaches the city's timezone, keeps only the next 30 days (`daysInSched`), and writes `shows.json`.
 - `Gig.uid` is a deterministic hash of doors/url/bands. It becomes the show's URL path and the calendar UID, so it must stay stable between runs (calendar subscribers would otherwise get duplicates).
 - Python files are indented with tabs.
 
 ### Site (`site/`)
-- `site/data/shows.json` is generated and gitignored. Without it the site builds with no shows.
+- Config is `site/config/_default/hugo.toml` (shared) plus `site/config/<city>/hugo.toml` (title, baseURL, timezone, `cityName`), selected with `--environment <city>`. Each city config mounts `data/<city>/` as Hugo's data directory, so templates read `hugo.Data.shows` without knowing the city.
+- `site/data/<city>/shows.json` is generated and gitignored. Without it that city builds with no shows.
+- Content is shared by every city. Use `site.Params.cityName` (or `{{< param "cityName" >}}` in markdown) instead of naming a city.
 - `content/shows/_content.gotmpl` is a Hugo content adapter that creates one page per show from `hugo.Data.shows`. Taxonomies `venues` and `dates` (configured in `hugo.toml`) produce the per-venue and per-day pages.
 - `buildFuture = true` is required: every show is dated in the future, so Hugo would otherwise silently drop them all.
 - Venue details (address, url, geo) are not on show pages. Templates look them up by venue name via `_partials/venue.html`.
@@ -55,16 +61,17 @@ src/update.py ──> site/data/shows.json ──> Hugo (site/) ──> nginx im
 
 ### Deploy (`deploy/dev`, `deploy/prod`)
 - dev and prod are near-duplicate copies (compose file, `Dockerfile.nginx`, `web/nginx.conf`). Change both unless the change is environment-specific.
-- The nginx image is a multi-stage build: `ghcr.io/gohugoio/hugo` (pinned version) builds `site/`, then nginx serves the output. The compose build context is the repo root (`context: ../..`), filtered by the root `.dockerignore`. `BASE_URL` is `/` for dev and `https://atl.ears.rip/` for prod.
+- Each city is a compose service (`atl-ears-rip`, `avl-ears-rip`) built from the same `Dockerfile.nginx` with a `CITY` build arg, plus its own nginx-prometheus-exporter listed in `web/prometheus.yml`. The nginx image is a multi-stage build: `ghcr.io/gohugoio/hugo` (pinned version) builds `site/` for that city, then nginx serves the output. The compose build context is the repo root (`context: ../..`), filtered by the root `.dockerignore`. `BASE_URL` is `/` for dev and defaults to `https://<city>.ears.rip/` for prod.
 - Show data only goes live when the nginx image is rebuilt (`start.sh`).
 - Traefik must stay on v3.6+ (v2 cannot talk to Docker Engine 29's API, which leaves every route as a 404). v3 rule syntax is one host per matcher: `` Host(`a`) || Host(`b`) ``.
-- Prod Traefik routes by hostname only (`atl.ears.rip`, `ears.rip`, `grafana.*`), so requests by IP get a 404.
+- Prod Traefik routes by hostname only (`atl.ears.rip` and the bare `ears.rip`, `avl.ears.rip`, `grafana.*`), so requests by IP get a 404. Dev uses `<city>.ears.rip.local`, and `localhost` goes to atl.
+- The compose project is still named `atl-ears-rip-<env>` (`start.sh`). Renaming it would start a duplicate stack whose fixed `container_name`s clash with the running one.
 - Let's Encrypt certs are persisted in the `traefik-acme` volume. Don't use `compose down -v` or anything else that recreates that volume: re-requesting certs quickly hits Let's Encrypt's 5-duplicate-certs-per-week limit.
 - The grafana compose volume `grafana-data` is external. `start.sh` creates it if it is missing.
 - Files in `deploy/*/web/` other than `nginx.conf` and `prometheus.yml` (old `*.html`, `events-ics/`) are leftovers from the pre-Hugo generator and are ignored.
 
-### Single city assumption
-"atl" is hardcoded in several places: `city` in `src/update.py`, `site/hugo.toml`, compose project/container names, and Traefik host rules. The README's "Adding a City" section is still empty.
+### Adding a city
+Follow the README's "Adding a City" checklist: city package with `timezone`, `site/config/<code>/hugo.toml`, a compose service and exporter in both dev and prod, prometheus target, and DNS for `<code>.ears.rip` before deploying to prod.
 
 ## Known issues
 `src/todo` tracks broken scrapers. At the time of writing, Star Community Bar returns 2024 dates and Aisle 5 is blocked by a Cloudflare challenge.

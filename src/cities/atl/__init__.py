@@ -1,3 +1,6 @@
+# Atlanta, GA
+timezone = "America/New_York"
+
 from .earl import Earl
 from .fivetwonine import Fivetwonine
 from .terminalwest import Terminalwest

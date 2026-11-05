@@ -1,10 +1,13 @@
 # Built from the repo root (see docker-compose.yml) so the hugo site is in the context
 
 FROM ghcr.io/gohugoio/hugo:v0.169.0 AS build
-ARG BASE_URL=https://atl.ears.rip/
+# which city to build, its three letter code (site/config/<city>/hugo.toml)
+ARG CITY=atl
+# defaults to https://<city>.ears.rip/
+ARG BASE_URL=
 ARG COMMIT=unknown
 COPY --chown=hugo:hugo site/ /project/
-RUN HUGO_PARAMS_COMMIT=${COMMIT} hugo --minify --baseURL ${BASE_URL} --destination /tmp/public
+RUN HUGO_PARAMS_COMMIT=${COMMIT} hugo --minify --environment ${CITY} --baseURL ${BASE_URL:-https://${CITY}.ears.rip/} --destination /tmp/public
 
 FROM nginx
 COPY deploy/prod/web/nginx.conf /etc/nginx/nginx.conf

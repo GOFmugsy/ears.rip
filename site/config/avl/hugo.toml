@@ -1,0 +1,19 @@
+# Asheville. Build with: hugo --environment avl
+# baseURL is overridden at build time with --baseURL (see deploy/*/Dockerfile.nginx)
+baseURL = "https://avl.ears.rip/"
+title = "avl.ears.rip"
+timeZone = "America/New_York"
+
+[params]
+city = "avl"
+cityName = "Asheville"
+timezone = "America/New_York"
+
+[params.about]
+title = "avl.ears.rip"
+description = "Every live show in Asheville, in one place."
+
+# build from this city's scraped shows (src/update.py writes data/avl/shows.json)
+[[module.mounts]]
+source = "data/avl"
+target = "data"

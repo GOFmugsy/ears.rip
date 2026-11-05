@@ -1,17 +1,14 @@
-# Overridden per environment at build time with --baseURL (see deploy/*/Dockerfile.nginx)
-baseURL = "https://atl.ears.rip/"
-title = "atl.ears.rip"
+# Settings shared by every city. Each city's own settings (title, url, timezone, and which
+# data/<city>/ folder to build from) are in config/<city>/hugo.toml, selected with
+# --environment <city>, e.g. hugo server --environment atl
 theme = "risotto"
 locale = "en-US"
-timeZone = "America/New_York"
 copyright = "There is absolutely no guarantee of any kind provided with this page or any derivative of this page"
 disableKinds = ["rss"]
 # Every show is in the future; without this hugo skips them all
 buildFuture = true
 
 [params]
-city = "atl"
-timezone = "America/New_York"
 # Set from the environment at build time (HUGO_PARAMS_COMMIT)
 commit = "unknown"
 
@@ -19,8 +16,6 @@ commit = "unknown"
 palette = "base16-dark"
 
 [params.about]
-title = "atl.ears.rip"
-description = "Every live show in Atlanta, in one place."
 logo = "🎧"
 
 [taxonomies]

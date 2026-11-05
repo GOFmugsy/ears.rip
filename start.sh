@@ -22,10 +22,15 @@ if [[ ! -f site/themes/risotto/theme.toml ]]; then
 	git submodule update --init site/themes/risotto
 fi
 
-if [[ ! -f site/data/shows.json ]]; then
-	echo "warning: site/data/shows.json not found, the site will have no shows." >&2
-	echo "         run src/update-container.sh (or src/update-podman.sh) to scrape venues." >&2
-fi
+# every city has a site/config/<city>/ hugo config and its scraped shows in site/data/<city>/
+for config in site/config/*/; do
+	city="$(basename "$config")"
+	[[ "$city" == "_default" ]] && continue
+	if [[ ! -f "site/data/$city/shows.json" ]]; then
+		echo "warning: site/data/$city/shows.json not found, $city.ears.rip will have no shows." >&2
+		echo "         run src/update-container.sh (or src/update-podman.sh) to scrape venues." >&2
+	fi
+done
 
 if docker info >/dev/null 2>&1; then
 	runtime=docker
