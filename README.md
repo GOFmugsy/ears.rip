@@ -5,7 +5,7 @@ Website to provide central location to get all live music shows happening in a c
 
 ### Map
 - ears.rip
-	- city list
+	- city list (built from `site/config/landing/`, links to every configured city)
 	- city.ears.rip
 		- all venues all shows all dates (`/`, plus `/index.ics` with every show)
 		- venue list (`/venues/`)
@@ -43,6 +43,7 @@ Each city is named by a three letter code (e.g. `atl`, `avl`), used for its fold
 - copy `site/config/atl/hugo.toml` to `site/config/[city]/hugo.toml` and change the code, city name, and timezone
 - run update, which writes `site/data/[city]/shows.json`, and preview with `hugo server --environment [city]`
 - in both `deploy/dev/docker-compose.yml` and `deploy/prod/docker-compose.yml`, copy the `avl-ears-rip` and `nginx-exporter-avl` services for the new city, and add its exporter to `deploy/*/web/prometheus.yml`
+- the ears.rip landing page lists the new city automatically, from its `site/config/[city]/hugo.toml`
 - point DNS for `[city].ears.rip` at the server before deploying to prod, so Let's Encrypt can issue its certificate
 
 ### Dependencies and Notes

@@ -11,6 +11,10 @@ buildFuture = true
 [params]
 # Set from the environment at build time (HUGO_PARAMS_COMMIT)
 commit = "unknown"
+# The ears.rip landing page, and each city's site by its code. The dev build overrides
+# both from the environment (HUGO_PARAMS_HOMEURL, HUGO_PARAMS_CITYURL)
+homeURL = "https://ears.rip/"
+cityURL = "https://%s.ears.rip/"
 
 [params.theme]
 palette = "base16-dark"

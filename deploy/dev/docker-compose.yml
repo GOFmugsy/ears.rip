@@ -30,6 +30,12 @@ services:
       - -nginx.scrape-uri
       - http://avl-ears-rip/metrics
 
+  nginx-exporter-landing:
+    image: "nginx/nginx-prometheus-exporter:latest"
+    command:
+      - -nginx.scrape-uri
+      - http://ears-rip/metrics
+
   prometheus:
     build:
       dockerfile: Dockerfile.prometheus
@@ -62,7 +68,7 @@ services:
       - "8444:443"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.atl-ears-rip.rule=Host(`atl.ears.rip.local`) || Host(`atl.ears.rip`) || Host(`ears.rip`) || Host(`localhost`)" # Fix this for multiple cities
+      - "traefik.http.routers.atl-ears-rip.rule=Host(`atl.ears.rip.local`) || Host(`atl.ears.rip`)"
       - "traefik.http.routers.atl-ears-rip.entrypoints=web"
 
   avl-ears-rip:
@@ -77,6 +83,21 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.avl-ears-rip.rule=Host(`avl.ears.rip.local`) || Host(`avl.ears.rip`)"
       - "traefik.http.routers.avl-ears-rip.entrypoints=web"
+
+  # the ears.rip landing page, listing every city
+  ears-rip:
+    build:
+      context: ../..
+      dockerfile: deploy/dev/Dockerfile.nginx
+      args:
+        CITY: landing
+        BASE_URL: "/"
+        COMMIT: ${COMMIT:-unknown}
+    container_name: "ears-rip"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ears-rip.rule=Host(`ears.rip.local`) || Host(`ears.rip`) || Host(`localhost`)"
+      - "traefik.http.routers.ears-rip.entrypoints=web"
 
 volumes:
   grafana-data:

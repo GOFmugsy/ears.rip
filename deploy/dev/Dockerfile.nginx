@@ -4,9 +4,12 @@ FROM ghcr.io/gohugoio/hugo:v0.169.0 AS build
 # root-relative links so the site works under every dev hostname
 ARG BASE_URL=/
 ARG COMMIT=unknown
-# which city to build, its three letter code (site/config/<city>/hugo.toml)
+# which city to build, its three letter code (site/config/<city>/hugo.toml), or "landing"
+# for the ears.rip page that lists every city
 ARG CITY=atl
 COPY --chown=hugo:hugo site/ /project/
+# links between the landing page and the cities use the dev hostnames
+ENV HUGO_PARAMS_HOMEURL=http://ears.rip.local/ HUGO_PARAMS_CITYURL=http://%s.ears.rip.local/
 RUN HUGO_PARAMS_COMMIT=${COMMIT} hugo --minify --environment ${CITY} --baseURL ${BASE_URL} --destination /tmp/public
 
 FROM nginx

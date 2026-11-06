@@ -1,0 +1,31 @@
+{{/*
+  Every configured city: a config/<city>/hugo.toml that sets params.city. Show and venue
+  counts come from data/<city>/shows.json, if the city has been scraped.
+*/}}
+{{ $cities := slice }}
+{{ range os.ReadDir "config" }}
+  {{ if .IsDir }}
+    {{ $file := printf "config/%s/hugo.toml" .Name }}
+    {{ if os.FileExists $file }}
+      {{ $config := resources.FromString $file (os.ReadFile $file) | transform.Unmarshal }}
+      {{ with $config.params }}
+        {{ with .city }}
+          {{ $cities = $cities | append (dict "code" . "name" ($config.params.cityName | default .)) }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+<h1>cities</h1>
+<ul class="city-list">
+  {{ range sort $cities "name" }}
+    {{ $data := index hugo.Data .code }}
+    <li>
+      <a href="{{ printf site.Params.cityURL .code }}">{{ .name }}</a> <small>{{ .code }}.ears.rip</small>
+      {{ with $data }}{{ with .shows }}
+        <br><small>{{ len .shows }} shows in the next 30 days &middot; {{ len .venues }} venues</small>
+      {{ end }}{{ end }}
+    </li>
+  {{ end }}
+</ul>

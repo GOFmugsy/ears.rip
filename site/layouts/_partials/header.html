@@ -1,0 +1,13 @@
+{{/* The risotto theme's header, plus a link from each city back to the ears.rip landing page */}}
+<nav class="page__nav main-nav">
+    <ul>
+      <li class="nomarker"><h1 class="page__logo"><a href="{{ .Site.BaseURL }}" class="page__logo-inner">{{ .Site.Title }}</a></h1></li>
+    {{ $currentPage := . }}
+    {{ range .Site.Menus.main }}
+    <li class="main-nav__item"><a class="nav-main-item{{ if or ($currentPage.IsMenuCurrent "main" .) ($currentPage.HasMenuCurrent "main" .) (eq ($currentPage.Permalink) (.URL | absLangURL)) }} active{{end}}" href="{{ .URL | absLangURL }}" title="{{ .Title }}">{{ .Name }}</a></li>
+    {{ end }}
+    {{ if not site.Params.landing }}
+    <li class="main-nav__item"><a class="nav-main-item" href="{{ site.Params.homeURL }}" title="every city on ears.rip">all cities</a></li>
+    {{ end }}
+    </ul>
+</nav>

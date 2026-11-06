@@ -21,7 +21,7 @@ cd src && ./update-container.sh            # same, in a container (update-podman
 # Try one venue scraper
 cd src && python3 -c "from cities.atl.earl import Earl; v = Earl(); print(len(v.gigs)); print(v.gigs[0])"
 
-# Site. Every hugo command needs --environment <city>; without it the site builds with no shows.
+# Site. Every hugo command needs --environment <city> (or landing, for the ears.rip page); without it the site builds with no shows.
 cd site && hugo server --environment atl                     # local preview
 cd site && hugo --environment atl --minify -d /tmp/public    # full build; check the page count isn't ~8
 
@@ -50,6 +50,8 @@ src/update.py ──> site/data/<city>/shows.json ──> Hugo --environment <ci
 ### Site (`site/`)
 - Config is `site/config/_default/hugo.toml` (shared) plus `site/config/<city>/hugo.toml` (title, baseURL, timezone, `cityName`), selected with `--environment <city>`. Each city config mounts `data/<city>/` as Hugo's data directory, so templates read `hugo.Data.shows` without knowing the city.
 - `site/data/<city>/shows.json` is generated and gitignored. Without it that city builds with no shows.
+- `site/config/landing/` is not a city: it builds the ears.rip landing page (home page only, `params.landing = true`). `_partials/cities.html` lists every `config/<dir>/hugo.toml` that sets `params.city`, with show counts from `data/<city>/shows.json` (the landing build has no data mount, so it sees every city's data). Skip `landing` and `_default` anywhere that loops over cities.
+- Links between the landing page and cities use `params.homeURL` and `params.cityURL` (a `%s` format for the code). They default to the prod hostnames; the dev Dockerfile overrides both with `HUGO_PARAMS_*` env vars. Each city's "all cities" nav link comes from the overridden `_partials/header.html`.
 - Content is shared by every city. Use `site.Params.cityName` (or `{{< param "cityName" >}}` in markdown) instead of naming a city.
 - `content/shows/_content.gotmpl` is a Hugo content adapter that creates one page per show from `hugo.Data.shows`. Taxonomies `venues` and `dates` (configured in `hugo.toml`) produce the per-venue and per-day pages.
 - `buildFuture = true` is required: every show is dated in the future, so Hugo would otherwise silently drop them all.
@@ -61,10 +63,10 @@ src/update.py ──> site/data/<city>/shows.json ──> Hugo --environment <ci
 
 ### Deploy (`deploy/dev`, `deploy/prod`)
 - dev and prod are near-duplicate copies (compose file, `Dockerfile.nginx`, `web/nginx.conf`). Change both unless the change is environment-specific.
-- Each city is a compose service (`atl-ears-rip`, `avl-ears-rip`) built from the same `Dockerfile.nginx` with a `CITY` build arg, plus its own nginx-prometheus-exporter listed in `web/prometheus.yml`. The nginx image is a multi-stage build: `ghcr.io/gohugoio/hugo` (pinned version) builds `site/` for that city, then nginx serves the output. The compose build context is the repo root (`context: ../..`), filtered by the root `.dockerignore`. `BASE_URL` is `/` for dev and defaults to `https://<city>.ears.rip/` for prod.
+- Each city is a compose service (`atl-ears-rip`, `avl-ears-rip`), and the landing page is `ears-rip` (`CITY: landing`, `BASE_URL: https://ears.rip/` in prod), built from the same `Dockerfile.nginx` with a `CITY` build arg, plus its own nginx-prometheus-exporter listed in `web/prometheus.yml`. The nginx image is a multi-stage build: `ghcr.io/gohugoio/hugo` (pinned version) builds `site/` for that city, then nginx serves the output. The compose build context is the repo root (`context: ../..`), filtered by the root `.dockerignore`. `BASE_URL` is `/` for dev and defaults to `https://<city>.ears.rip/` for prod.
 - Show data only goes live when the nginx image is rebuilt (`start.sh`).
 - Traefik must stay on v3.6+ (v2 cannot talk to Docker Engine 29's API, which leaves every route as a 404). v3 rule syntax is one host per matcher: `` Host(`a`) || Host(`b`) ``.
-- Prod Traefik routes by hostname only (`atl.ears.rip` and the bare `ears.rip`, `avl.ears.rip`, `grafana.*`), so requests by IP get a 404. Dev uses `<city>.ears.rip.local`, and `localhost` goes to atl.
+- Prod Traefik routes by hostname only (`ears.rip` to the landing page, `atl.ears.rip`, `avl.ears.rip`, `grafana.*`), so requests by IP get a 404. Dev uses `<city>.ears.rip.local`, and `ears.rip.local` / `localhost` go to the landing page.
 - The compose project is still named `atl-ears-rip-<env>` (`start.sh`). Renaming it would start a duplicate stack whose fixed `container_name`s clash with the running one.
 - Let's Encrypt certs are persisted in the `traefik-acme` volume. Don't use `compose down -v` or anything else that recreates that volume: re-requesting certs quickly hits Let's Encrypt's 5-duplicate-certs-per-week limit.
 - The grafana compose volume `grafana-data` is external. `start.sh` creates it if it is missing.

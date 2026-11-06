@@ -1,7 +1,8 @@
 # Built from the repo root (see docker-compose.yml) so the hugo site is in the context
 
 FROM ghcr.io/gohugoio/hugo:v0.169.0 AS build
-# which city to build, its three letter code (site/config/<city>/hugo.toml)
+# which city to build, its three letter code (site/config/<city>/hugo.toml), or "landing"
+# for the ears.rip page that lists every city (pass BASE_URL=https://ears.rip/)
 ARG CITY=atl
 # defaults to https://<city>.ears.rip/
 ARG BASE_URL=

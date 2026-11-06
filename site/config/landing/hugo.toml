@@ -1,0 +1,23 @@
+# The ears.rip landing page, listing every city. Build with: hugo --environment landing
+# It isn't a city: it lists each config/<city>/ that sets params.city (see layouts/_partials/cities.html)
+baseURL = "https://ears.rip/"
+title = "ears.rip"
+# only the home page; the shows, venues, dates, and about pages belong to the cities
+disableKinds = ["rss", "page", "section", "taxonomy", "term"]
+
+[params]
+landing = true
+
+[params.about]
+title = "ears.rip"
+description = "Every live show, city by city."
+
+[outputs]
+home = ["html"]
+
+# replaces the cities' menu
+[menu]
+  [[menu.main]]
+    name = "cities"
+    url = "/"
+    weight = 10

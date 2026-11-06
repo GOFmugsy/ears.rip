@@ -1,6 +1,10 @@
 {{ define "main" }}
   {{ .Content }}
-  {{ partial "schedule.html" (where site.RegularPages "Section" "shows") }}
+  {{ if site.Params.landing }}
+    {{ partial "cities.html" . }}
+  {{ else }}
+    {{ partial "schedule.html" (where site.RegularPages "Section" "shows") }}
+  {{ end }}
 {{ end }}
 
 {{ define "aside" }}
